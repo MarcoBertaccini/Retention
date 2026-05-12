@@ -65,7 +65,7 @@
 
     .stat-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
     }
 
@@ -95,7 +95,7 @@
 
     @media (max-width: 580px) {
       .grid { grid-template-columns: 1fr; }
-      .stat-grid { grid-template-columns: repeat(3, 1fr); }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     .card {
@@ -271,6 +271,10 @@
         <div class="stat-label">Reminder inviati</div>
         <div class="stat-val" id="stat-sent">0</div>
       </div>
+      <div class="stat">
+        <div class="stat-label">Retention inviati</div>
+        <div class="stat-val" id="stat-retention">0</div>
+      </div>
     </div>
 
     <div class="grid">
@@ -312,8 +316,9 @@
   </div>
 
   <script>
-    const WEBHOOK_POST = 'https://n8n.zenith-studio.it/webhook/8038f5e2-70da-4b26-8fbc-d3b4af98ff01';
-    const WEBHOOK_GET  = 'https://n8n.zenith-studio.it/webhook/42a6d63c-12b7-48a2-8b7f-68313af5c883';
+    const WEBHOOK_POST = 'https://n8n.zenith-studio.it/webhook/1e27f028-1ec0-471a-9df5-2b51d9df152c';
+    const WEBHOOK_GET  = 'https://n8n.zenith-studio.it/webhook/8a80e4be-9dc3-44d5-836b-c063dbefbbbe';
+    const WEBHOOK_DEL  = 'https://n8n.zenith-studio.it/webhook/d4ca3d3c-1b78-401e-b827-21823f8df7e2';
 
     let appts = [];
     let pazienti = [];
@@ -346,6 +351,7 @@
       document.getElementById('stat-today').textContent = appts.filter(a => a.data === today).length;
       document.getElementById('stat-tomorrow').textContent = appts.filter(a => a.data === tomorrow).length;
       document.getElementById('stat-sent').textContent = appts.filter(a => a.reminder).length;
+      document.getElementById('stat-retention').textContent = appts.filter(a => a.retention).length;
 
       _sorted = [...appts].sort((a, b) => (a.data + a.ora).localeCompare(b.data + b.ora));
       const sorted = _sorted;
@@ -386,6 +392,7 @@
           data: sheetDateToIso(r['Data appuntamento']),
           ora: r['Orario'] || '',
           reminder: (r['Reminder'] || '').toString().toLowerCase() === 'mandato',
+          retention: (r['Retention'] || '').toString().toLowerCase() === 'mandato',
           row_number: r['row_number']
         })).filter(a => a.nome && a.data);
 
@@ -495,7 +502,7 @@
 
         if (!res.ok) throw new Error();
 
-        appts.push({ nome, cognome, tel, data, ora, reminder: false });
+        appts.push({ nome, cognome, tel, data, ora, reminder: false, retention: false });
         if (!pazienti.find(p => p.nome === nome && p.cognome === cognome)) {
           pazienti.push({ nome, cognome, tel });
         }
@@ -526,7 +533,7 @@
       const idx = appts.indexOf(item);
       if (idx !== -1) appts.splice(idx, 1);
       render();
-      fetch('https://n8n.zenith-studio.it/webhook/875e63b3-e25e-4278-85d8-23a0ab57efdf', {
+      fetch(WEBHOOK_DEL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ row_number: item.row_number })
