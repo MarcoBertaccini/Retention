@@ -425,7 +425,7 @@
       <div id="modal-name"   class="modal-name"></div>
       <div id="modal-detail" class="modal-detail"></div>
       <div id="modal-status" class="modal-status"></div>
-      <button class="btn btn-danger" onclick="modalDelete()">🗑 Elimina appuntamento</button>
+      <button class="btn btn-danger" onclick="modalDelete()">🗑 Libera slot</button>
       <button class="btn btn-ghost"  onclick="closeEventModal()" style="margin-top:8px">Annulla</button>
     </div>
   </div>
@@ -573,15 +573,22 @@
     async function modalDelete() {
       if (!_modalAppt) return;
       const appt = _modalAppt;
+      const nomeCompleto = appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
+      const conferma = `Sicuro di voler liberare lo slot di ${nomeCompleto} del ${fmtDate(appt.data)} alle ${appt.ora}?\nIl contatto cliente resta in rubrica.`;
+      if (!window.confirm(conferma)) return;
       closeEventModal();
       const idx = appts.indexOf(appt);
       if (idx !== -1) appts.splice(idx, 1);
       render();
-      fetch(WEBHOOK_DEL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ row_number: appt.row_number })
-      }).catch(e => console.error('Errore eliminazione', e));
+      try {
+        await fetch(WEBHOOK_DEL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ row_number: appt.row_number })
+        });
+      } catch (e) {
+        console.error('Errore liberazione slot', e);
+      }
     }
 
     document.addEventListener('keydown', e => {
