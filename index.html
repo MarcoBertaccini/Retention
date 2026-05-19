@@ -189,6 +189,43 @@
     }
     .btn-ghost:hover { background: var(--bg); opacity: 1; }
 
+    .form-row textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 15px;
+      padding: 9px 12px;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      resize: vertical;
+      min-height: 72px;
+    }
+    .form-row textarea:focus { border-color: rgba(0,0,0,0.3); }
+
+    .modal-notes {
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 1rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .modal-actions .btn { margin-top: 0; flex: 1; }
+
+    @media (max-width: 400px) {
+      .modal-actions { flex-direction: column; }
+    }
+
     .msg {
       font-size: 13px;
       text-align: center;
@@ -396,7 +433,12 @@
           <label>Ora</label>
           <input type="time" id="inp-ora" />
         </div>
-        <button class="btn" id="btn-add" onclick="addAppt()">+ Aggiungi</button>
+        <div class="form-row">
+          <label>Note (opzionale)</label>
+          <textarea id="inp-note" placeholder="Informazioni aggiuntive..." maxlength="500" rows="3"></textarea>
+        </div>
+        <button class="btn" id="btn-add" onclick="addAppt()">Aggiungi appuntamento</button>
+        <button class="btn btn-ghost" id="btn-cancel-edit" onclick="cancelEdit()" style="display:none;margin-top:6px">Annulla modifica</button>
         <div class="msg msg-ok" id="msg-ok">✓ Appuntamento aggiunto!</div>
         <div class="msg msg-err" id="msg-err">✗ Errore, riprova.</div>
       </div>
@@ -425,8 +467,12 @@
       <div id="modal-name"   class="modal-name"></div>
       <div id="modal-detail" class="modal-detail"></div>
       <div id="modal-status" class="modal-status"></div>
-      <button class="btn btn-danger" onclick="modalDelete()">🗑 Libera slot</button>
-      <button class="btn btn-ghost"  onclick="closeEventModal()" style="margin-top:8px">Annulla</button>
+      <div id="modal-notes" class="modal-notes" style="display:none"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="startEdit(_modalAppt)">✏️ Modifica</button>
+        <button class="btn btn-danger" onclick="modalDelete()">🗑 Libera slot</button>
+      </div>
+      <button class="btn btn-ghost" onclick="closeEventModal()" style="margin-top:8px">Annulla</button>
     </div>
   </div>
 
@@ -436,7 +482,8 @@
 
     const WEBHOOK_POST = 'https://n8n.zenith-studio.it/webhook/1e27f028-1ec0-471a-9df5-2b51d9df152c';
     const WEBHOOK_GET  = 'https://n8n.zenith-studio.it/webhook/8a80e4be-9dc3-44d5-836b-c063dbefbbbe';
-    const WEBHOOK_DEL  = 'https://n8n.zenith-studio.it/webhook/d4ca3d3c-1b78-401e-b827-21823f8df7e2';
+    const WEBHOOK_DEL    = 'https://n8n.zenith-studio.it/webhook/d4ca3d3c-1b78-401e-b827-21823f8df7e2';
+    const WEBHOOK_UPDATE = 'https://n8n.zenith-studio.it/webhook/update-appuntamento';
 
     // ─── Stato ────────────────────────────────────────────────────────────────
     let appts   = [];
@@ -444,6 +491,7 @@
     let _sorted  = [];
     let calendar = null;
     let _modalAppt = null;
+    let _editingRowNumber = null;
 
     // ─── Header date ──────────────────────────────────────────────────────────
     const now = new Date();
@@ -565,12 +613,46 @@
       if (appt.retention) statusParts.push('✓ Retention inviato');
       document.getElementById('modal-status').textContent = statusParts.join('  ');
 
+      const notesEl = document.getElementById('modal-notes');
+      if (appt.note) {
+        notesEl.textContent = appt.note;
+        notesEl.style.display = '';
+      } else {
+        notesEl.style.display = 'none';
+      }
+
       document.getElementById('event-modal').style.display = 'flex';
     }
 
     function closeEventModal() {
       document.getElementById('event-modal').style.display = 'none';
       _modalAppt = null;
+    }
+
+    function startEdit(appt) {
+      if (!appt) return;
+      closeEventModal();
+      document.getElementById('inp-nome').value    = appt.nome;
+      document.getElementById('inp-cognome').value = appt.cognome;
+      document.getElementById('inp-tel').value     = appt.tel;
+      document.getElementById('inp-data').value    = appt.data;
+      document.getElementById('inp-ora').value     = appt.ora;
+      document.getElementById('inp-note').value    = appt.note || '';
+      _editingRowNumber = appt.row_number;
+      const btn = document.getElementById('btn-add');
+      btn.textContent = 'Aggiorna appuntamento';
+      document.getElementById('btn-cancel-edit').style.display = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      _editingRowNumber = null;
+      ['inp-nome', 'inp-cognome', 'inp-tel', 'inp-data', 'inp-ora', 'inp-note']
+        .forEach(id => document.getElementById(id).value = '');
+      const btn = document.getElementById('btn-add');
+      btn.disabled = false;
+      btn.textContent = 'Aggiungi appuntamento';
+      document.getElementById('btn-cancel-edit').style.display = 'none';
     }
 
     async function modalDelete() {
@@ -650,6 +732,7 @@
           ora:        r['Orario'] || '',
           reminder:   (r['Reminder']  || '').toString().toLowerCase() === 'mandato',
           retention:  (r['Retention'] || '').toString().toLowerCase() === 'mandato',
+          note:       (r['Note'] || '').trim(),
           row_number: r['row_number']
         })).filter(a => a.nome && a.data);
 
@@ -730,7 +813,7 @@
       document.querySelectorAll('input').forEach(e => e.style.borderColor = '');
     }
 
-    // ─── Add appointment ──────────────────────────────────────────────────────
+    // ─── Add / Update appointment ─────────────────────────────────────────────
     async function addAppt() {
       clearFieldErrors();
       const nome    = document.getElementById('inp-nome').value.trim();
@@ -738,6 +821,7 @@
       const tel     = document.getElementById('inp-tel').value.trim();
       const data    = document.getElementById('inp-data').value;
       const ora     = document.getElementById('inp-ora').value;
+      const note    = document.getElementById('inp-note').value.trim();
 
       let valid = true;
       if (!nome) { showFieldError('inp-nome', 'Campo obbligatorio'); valid = false; }
@@ -751,25 +835,48 @@
       btn.disabled = true;
       btn.textContent = 'Salvataggio...';
 
+      const editingRow = _editingRowNumber;
+
       try {
-        const res = await fetch(WEBHOOK_POST, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, cognome, telefono: tel, data, ora })
-        });
+        let res;
+        if (editingRow != null) {
+          res = await fetch(WEBHOOK_UPDATE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              row_number: editingRow,
+              'Nome': nome,
+              'Cognome': cognome,
+              'Numero di telefono': tel,
+              'Data appuntamento': data,
+              'Orario': ora,
+              'Note': note
+            })
+          });
+        } else {
+          res = await fetch(WEBHOOK_POST, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, cognome, telefono: tel, data, ora, note })
+          });
+        }
 
         if (!res.ok) throw new Error();
 
-        appts.push({ nome, cognome, tel, data, ora, reminder: false, retention: false });
-        if (!pazienti.find(p => p.nome === nome && p.cognome === cognome)) {
-          pazienti.push({ nome, cognome, tel });
+        if (editingRow != null) {
+          const idx = appts.findIndex(a => a.row_number === editingRow);
+          if (idx !== -1) appts[idx] = { ...appts[idx], nome, cognome, tel, data, ora, note };
+          cancelEdit();
+        } else {
+          appts.push({ nome, cognome, tel, data, ora, note, reminder: false, retention: false });
+          if (!pazienti.find(p => p.nome === nome && p.cognome === cognome)) {
+            pazienti.push({ nome, cognome, tel });
+          }
+          ['inp-nome', 'inp-cognome', 'inp-tel', 'inp-data', 'inp-ora', 'inp-note']
+            .forEach(id => document.getElementById(id).value = '');
+          btn.disabled = false;
+          btn.textContent = 'Aggiungi appuntamento';
         }
-
-        document.getElementById('inp-nome').value    = '';
-        document.getElementById('inp-cognome').value = '';
-        document.getElementById('inp-tel').value     = '';
-        document.getElementById('inp-data').value    = '';
-        document.getElementById('inp-ora').value     = '';
 
         const ok = document.getElementById('msg-ok');
         ok.style.display = 'block';
@@ -777,13 +884,17 @@
 
         render();
       } catch (e) {
-        const err = document.getElementById('msg-err');
-        err.style.display = 'block';
-        setTimeout(() => err.style.display = 'none', 3000);
+        btn.disabled = false;
+        if (editingRow != null) {
+          btn.textContent = 'Aggiorna appuntamento';
+          alert('Errore durante l\'aggiornamento. Riprova.');
+        } else {
+          btn.textContent = 'Aggiungi appuntamento';
+          const err = document.getElementById('msg-err');
+          err.style.display = 'block';
+          setTimeout(() => err.style.display = 'none', 3000);
+        }
       }
-
-      btn.disabled = false;
-      btn.textContent = '+ Aggiungi';
     }
 
     // ─── Delete appointment (from list) ───────────────────────────────────────
