@@ -491,7 +491,7 @@
     let _sorted  = [];
     let calendar = null;
     let _modalAppt = null;
-    let _editingRowNumber = null;
+    var _editingRowNumber = null;
 
     // ─── Header date ──────────────────────────────────────────────────────────
     const now = new Date();
@@ -839,7 +839,7 @@
 
       try {
         let res;
-        if (editingRow != null) {
+        if (editingRow !== null) {
           res = await fetch(WEBHOOK_UPDATE, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -863,7 +863,7 @@
 
         if (!res.ok) throw new Error();
 
-        if (editingRow != null) {
+        if (editingRow !== null) {
           const idx = appts.findIndex(a => a.row_number === editingRow);
           if (idx !== -1) appts[idx] = { ...appts[idx], nome, cognome, tel, data, ora, note };
           cancelEdit();
@@ -885,7 +885,7 @@
         render();
       } catch (e) {
         btn.disabled = false;
-        if (editingRow != null) {
+        if (editingRow !== null) {
           btn.textContent = 'Aggiorna appuntamento';
           alert('Errore durante l\'aggiornamento. Riprova.');
         } else {
