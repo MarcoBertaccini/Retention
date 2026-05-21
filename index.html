@@ -49,329 +49,173 @@
       transition: max-width 0.2s ease;
     }
 
-    .container.wide { max-width: 1100px; }
+    .container.wide { max-width: 1200px; }
 
-    header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 0.5rem;
-    }
-
+    header { display: flex; align-items: center; gap: 10px; padding-bottom: 0.5rem; }
     header h1 { font-size: 18px; font-weight: 500; }
     header span { font-size: 13px; color: var(--text-muted); margin-left: auto; }
 
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .stat {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.875rem 1rem;
-    }
-
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .stat { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.875rem 1rem; }
     .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
     .stat-val   { font-size: 24px; font-weight: 500; }
 
     /* ── View toggle ── */
-    .view-toggle {
-      display: flex;
-      gap: 4px;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 4px;
-      align-self: flex-start;
-    }
-
-    .toggle-btn {
-      font-family: inherit;
-      font-size: 13px;
-      padding: 6px 16px;
-      border: none;
-      border-radius: 6px;
-      background: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-
-    .toggle-btn.active          { background: var(--accent); color: #fff; }
+    .view-toggle { display: flex; gap: 4px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 4px; align-self: flex-start; }
+    .toggle-btn { font-family: inherit; font-size: 13px; padding: 6px 16px; border: none; border-radius: 6px; background: none; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+    .toggle-btn.active { background: var(--accent); color: #fff; }
     .toggle-btn:not(.active):hover { background: var(--bg); color: var(--text); }
 
     /* ── Grid ── */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    /* In calendar mode give the form a fixed width, calendar gets the rest */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .container.wide .grid { grid-template-columns: 300px 1fr; }
-
     @media (max-width: 580px) {
-      .grid          { grid-template-columns: 1fr; }
-      .stat-grid     { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
       .container.wide .grid { grid-template-columns: 1fr; }
     }
 
     /* ── Cards ── */
-    .card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-    }
-
-    .card-title {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+    .card-title { font-size: 13px; color: var(--text-muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
 
     /* ── Form ── */
-    .form-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 10px;
-    }
-
+    .form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
     .form-row label { font-size: 12px; color: var(--text-muted); }
-
-    .form-row input {
-      width: 100%;
-      font-family: inherit;
-      font-size: 15px;
-      padding: 9px 12px;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
+    .form-row input, .form-row textarea {
+      width: 100%; font-family: inherit; font-size: 15px; padding: 9px 12px;
+      border: 0.5px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s;
     }
+    .form-row input:focus, .form-row textarea:focus { border-color: rgba(0,0,0,0.3); }
+    .form-row textarea { resize: vertical; min-height: 72px; }
 
-    .form-row input:focus { border-color: rgba(0,0,0,0.3); }
-
+    /* ── Buttons ── */
     .btn {
-      width: 100%;
-      font-family: inherit;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 11px;
-      border: none;
-      border-radius: var(--radius-sm);
-      background: var(--accent);
-      color: #fff;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: opacity 0.15s;
+      width: 100%; font-family: inherit; font-size: 15px; font-weight: 500;
+      padding: 11px; border: none; border-radius: var(--radius-sm);
+      background: var(--accent); color: #fff; cursor: pointer; margin-top: 4px; transition: opacity 0.15s;
     }
-
     .btn:hover    { opacity: 0.8; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
     .btn-danger { background: var(--danger-text); }
-
-    .btn-ghost {
-      background: none;
-      color: var(--text-muted);
-      border: 0.5px solid var(--border);
-    }
+    .btn-ghost  { background: none; color: var(--text-muted); border: 0.5px solid var(--border); }
     .btn-ghost:hover { background: var(--bg); opacity: 1; }
+    .btn-sm { font-size: 12px; padding: 6px 12px; width: auto; margin-top: 0; }
 
-    .form-row textarea {
-      width: 100%;
-      font-family: inherit;
-      font-size: 15px;
-      padding: 9px 12px;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--bg);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
-      resize: vertical;
-      min-height: 72px;
-    }
-    .form-row textarea:focus { border-color: rgba(0,0,0,0.3); }
+    /* ── Messages ── */
+    .msg { font-size: 13px; text-align: center; padding: 8px; border-radius: var(--radius-sm); margin-top: 8px; display: none; }
+    .msg-ok   { background: var(--success-bg); color: var(--success-text); }
+    .msg-err  { background: var(--danger-bg);  color: var(--danger-text); }
+    .msg-warn { font-size: 12px; padding: 7px 10px; border-radius: var(--radius-sm); margin-top: 6px; background: var(--warning-bg); color: var(--warning-text); }
 
-    .modal-notes {
-      font-size: 13px;
-      color: var(--text-muted);
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      margin-bottom: 1rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .modal-actions .btn { margin-top: 0; flex: 1; }
-
-    @media (max-width: 400px) {
-      .modal-actions { flex-direction: column; }
-    }
-
-    .msg {
-      font-size: 13px;
-      text-align: center;
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      margin-top: 8px;
-      display: none;
-    }
-
-    .msg-ok  { background: var(--success-bg); color: var(--success-text); }
-    .msg-err { background: var(--danger-bg);  color: var(--danger-text);  }
-
-    /* ── Appointment list ── */
-    .appt-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 420px;
-      overflow-y: auto;
-    }
-
-    .appt-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-    }
-
-    .avatar {
-      width: 36px; height: 36px; min-width: 36px;
-      border-radius: 50%;
-      background: var(--info-bg);
-      color: var(--info-text);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 500;
-    }
-
-    .appt-name {
-      font-size: 14px; font-weight: 500;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .appt-time { font-size: 12px; color: var(--text-muted); }
-
-    .badge {
-      margin-left: auto; min-width: fit-content;
-      font-size: 11px; padding: 3px 8px; border-radius: 99px;
-    }
-
-    .badge-pending { background: var(--warning-bg); color: var(--warning-text); }
-    .badge-sent    { background: var(--success-bg);  color: var(--success-text); }
-
-    .btn-del {
-      background: none; border: none; cursor: pointer;
-      color: var(--text-hint); font-size: 16px; line-height: 1;
-      padding: 4px 6px; border-radius: var(--radius-sm);
-      transition: color 0.15s, background 0.15s; flex-shrink: 0;
-    }
-    .btn-del:hover { color: var(--danger-text); background: var(--danger-bg); }
-
-    .empty {
-      font-size: 13px; color: var(--text-hint);
-      text-align: center; padding: 2rem 0;
-    }
-
-    /* ── Event modal ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9000;
-      padding: 1rem;
-    }
-
-    .modal-box {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      width: 100%;
-      max-width: 340px;
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    }
-
-    .modal-close {
-      position: absolute; top: 12px; right: 12px;
-      background: none; border: none; font-size: 20px;
-      cursor: pointer; color: var(--text-muted); line-height: 1; padding: 4px;
-    }
+    /* ── Modal base ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 9000; padding: 1rem; }
+    .modal-box { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; width: 100%; max-width: 340px; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+    .modal-box.modal-wide { max-width: 480px; }
+    .modal-close { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); line-height: 1; padding: 4px; }
     .modal-close:hover { color: var(--text); }
-
     .modal-name   { font-size: 17px; font-weight: 500; margin-bottom: 6px; padding-right: 24px; }
     .modal-detail { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
     .modal-status { font-size: 12px; margin-bottom: 1.25rem; }
-
+    .modal-notes  { font-size: 13px; color: var(--text-muted); background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 1rem; white-space: pre-wrap; word-break: break-word; }
     @media (max-width: 580px) {
       .modal-overlay { padding: 0; align-items: flex-end; }
       .modal-box { max-width: 100%; border-radius: var(--radius) var(--radius) 0 0; }
     }
 
+    /* ── Modal actions — 3 buttons, wrap on mobile ── */
+    .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .modal-actions .btn { margin-top: 0; flex: 1; min-width: 80px; }
+    @media (max-width: 480px) { .modal-actions .btn { flex-basis: 100%; } }
+
+    /* ── Tab bar ── */
+    .tab-bar { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 1rem; }
+    .tab-btn { font-family: inherit; font-size: 13px; padding: 8px 16px; border: none; background: none; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* ── Appointment list (lista view) ── */
+    .appt-list { display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+    .appt-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg); border-radius: var(--radius-sm); }
+    .avatar { width: 36px; height: 36px; min-width: 36px; border-radius: 50%; background: var(--info-bg); color: var(--info-text); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; }
+    .appt-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .appt-time { font-size: 12px; color: var(--text-muted); }
+    .badge { margin-left: auto; min-width: fit-content; font-size: 11px; padding: 3px 8px; border-radius: 99px; }
+    .badge-pending { background: var(--warning-bg); color: var(--warning-text); }
+    .badge-sent    { background: var(--success-bg);  color: var(--success-text); }
+    .btn-del { background: none; border: none; cursor: pointer; color: var(--text-hint); font-size: 16px; line-height: 1; padding: 4px 6px; border-radius: var(--radius-sm); transition: color 0.15s, background 0.15s; flex-shrink: 0; }
+    .btn-del:hover { color: var(--danger-text); background: var(--danger-bg); }
+    .empty { font-size: 13px; color: var(--text-hint); text-align: center; padding: 2rem 0; }
+
+    /* ── Calendar + sidebar layout ── */
+    .cal-with-sidebar { display: flex; gap: 16px; align-items: flex-start; }
+    .cal-col { flex: 1; min-width: 0; }
+    .lm-sidebar { width: 280px; min-width: 280px; border-left: 0.5px solid var(--border); padding-left: 16px; }
+    .lm-sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .lm-sidebar-title { font-size: 13px; font-weight: 500; }
+    @media (max-width: 768px) { .lm-sidebar { display: none; } }
+
+    /* ── Mobile button for waitlist ── */
+    .btn-lm-mobile { display: none; }
+    @media (max-width: 768px) { .btn-lm-mobile.has-items { display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; padding: 6px 12px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; color: var(--text-muted); margin-bottom: 10px; } }
+
+    /* ── Mobile overlay ── */
+    .lm-overlay { position: fixed; inset: 0; background: var(--surface); z-index: 9100; display: flex; flex-direction: column; padding: 1.25rem; overflow-y: auto; }
+    .lm-overlay-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .lm-overlay-title { font-size: 17px; font-weight: 500; }
+
+    /* ── Lista attesa cards ── */
+    .lm-list { display: flex; flex-direction: column; gap: 8px; max-height: 520px; overflow-y: auto; }
+    .lm-empty { font-size: 12px; color: var(--text-hint); text-align: center; padding: 1.5rem 0; }
+    .lm-card { background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
+    .lm-card-name { font-weight: 500; font-size: 13px; margin-bottom: 2px; }
+    .lm-card-tel  { color: var(--text-muted); font-size: 12px; margin-bottom: 2px; }
+    .lm-card-note { font-size: 11px; color: var(--text-hint); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default; }
+    .lm-card-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .lm-icon-btn { font-family: inherit; font-size: 14px; padding: 5px 0; border: 0.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; text-decoration: none; color: var(--text); display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex: 1; }
+    .lm-icon-btn:hover { background: var(--bg); }
+    .lm-icon-btn.danger:hover { background: var(--danger-bg); color: var(--danger-text); border-color: var(--danger-text); }
+
+    /* ── Pesca panel ── */
+    .pesca-panel { background: var(--info-bg); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 12px; }
+    .pesca-panel-title { font-size: 12px; color: var(--info-text); font-weight: 500; margin-bottom: 8px; }
+    .pesca-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+    .pesca-card { background: var(--surface); border-radius: var(--radius-sm); padding: 8px 10px; cursor: pointer; border: 0.5px solid var(--border); transition: background 0.15s; }
+    .pesca-card:hover { background: var(--bg); }
+    .pesca-card-name { font-size: 13px; font-weight: 500; }
+    .pesca-card-tel  { font-size: 12px; color: var(--text-muted); }
+    .pesca-card-note { font-size: 11px; color: var(--text-hint); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Rubrica search + list ── */
+    .rubrica-search { width: 100%; font-family: inherit; font-size: 14px; padding: 8px 12px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); outline: none; margin-bottom: 10px; }
+    .rubrica-search:focus { border-color: rgba(0,0,0,0.3); }
+    .rubrica-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; }
+    .rubrica-item { padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; transition: background 0.15s; }
+    .rubrica-item:hover { background: var(--bg); }
+    .rubrica-item-name { font-weight: 500; }
+    .rubrica-item-tel  { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Swap list ── */
+    .swap-list { display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; margin-bottom: 12px; }
+    .swap-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--bg); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s; }
+    .swap-item:hover { background: var(--info-bg); }
+    .swap-item-name { font-size: 13px; font-weight: 500; }
+    .swap-item-time { font-size: 12px; color: var(--text-muted); }
+
     /* ── FullCalendar overrides ── */
     .fc { font-family: 'DM Sans', sans-serif; font-size: 13px; }
-
     .fc .fc-toolbar-title { font-size: 15px; font-weight: 500; }
-
-    .fc .fc-toolbar.fc-header-toolbar {
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .fc .fc-button,
-    .fc .fc-button-primary {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 500;
-      background: var(--accent) !important;
-      border-color: var(--accent) !important;
-      border-radius: var(--radius-sm) !important;
-      padding: 4px 10px;
-      box-shadow: none !important;
-    }
-
-    .fc .fc-button:hover        { opacity: 0.8; }
-    .fc .fc-button-active       { opacity: 0.65 !important; }
+    .fc .fc-toolbar.fc-header-toolbar { margin-bottom: 0.75rem; flex-wrap: wrap; gap: 6px; }
+    .fc .fc-button, .fc .fc-button-primary { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; background: var(--accent) !important; border-color: var(--accent) !important; border-radius: var(--radius-sm) !important; padding: 4px 10px; box-shadow: none !important; }
+    .fc .fc-button:hover { opacity: 0.8; }
+    .fc .fc-button-active { opacity: 0.65 !important; }
     .fc .fc-today-button:disabled { opacity: 0.35 !important; }
-
-    .fc-theme-standard td,
-    .fc-theme-standard th        { border-color: var(--border); }
-
-    .fc .fc-timegrid-slot        { height: 2rem; }
-
-    .fc .fc-daygrid-day.fc-day-today,
-    .fc .fc-timegrid-col.fc-day-today { background: #f0f4ff !important; }
-
-    .fc .fc-col-header-cell-cushion,
-    .fc .fc-daygrid-day-number   { color: var(--text); text-decoration: none; }
-
-    .fc .fc-event               { cursor: pointer; border-radius: 4px !important; font-size: 12px !important; }
-    .fc .fc-event:hover         { opacity: 0.85; }
-
+    .fc-theme-standard td, .fc-theme-standard th { border-color: var(--border); }
+    .fc .fc-timegrid-slot { height: 2rem; }
+    .fc .fc-daygrid-day.fc-day-today, .fc .fc-timegrid-col.fc-day-today { background: #f0f4ff !important; }
+    .fc .fc-col-header-cell-cushion, .fc .fc-daygrid-day-number { color: var(--text); text-decoration: none; }
+    .fc .fc-event { cursor: pointer; border-radius: 4px !important; font-size: 12px !important; }
+    .fc .fc-event:hover { opacity: 0.85; }
     .fc .fc-scrollgrid-section-liquid > td { border: none; }
   </style>
 </head>
@@ -384,25 +228,12 @@
     </header>
 
     <div class="stat-grid">
-      <div class="stat">
-        <div class="stat-label">Oggi</div>
-        <div class="stat-val" id="stat-today">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Domani</div>
-        <div class="stat-val" id="stat-tomorrow">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Reminder inviati</div>
-        <div class="stat-val" id="stat-sent">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Retention inviati</div>
-        <div class="stat-val" id="stat-retention">0</div>
-      </div>
+      <div class="stat"><div class="stat-label">Oggi</div><div class="stat-val" id="stat-today">0</div></div>
+      <div class="stat"><div class="stat-label">Domani</div><div class="stat-val" id="stat-tomorrow">0</div></div>
+      <div class="stat"><div class="stat-label">Reminder inviati</div><div class="stat-val" id="stat-sent">0</div></div>
+      <div class="stat"><div class="stat-label">Retention inviati</div><div class="stat-val" id="stat-retention">0</div></div>
     </div>
 
-    <!-- View toggle -->
     <div class="view-toggle">
       <button id="btn-view-cal"  class="toggle-btn active" onclick="setView('calendario')">📅 Calendario</button>
       <button id="btn-view-list" class="toggle-btn"        onclick="setView('lista')">☰ Lista</button>
@@ -410,9 +241,18 @@
 
     <div class="grid">
 
-      <!-- ── Form card (unchanged) ── -->
+      <!-- ── Form card ── -->
       <div class="card">
-        <div class="card-title">✦ Nuovo appuntamento</div>
+        <div class="card-title"><span id="form-title-text">✦ Nuovo appuntamento</span></div>
+
+        <button id="btn-pesca" class="btn btn-ghost btn-sm" onclick="togglePescaPanel()"
+          style="display:none;width:100%;margin-bottom:12px">🎣 Pesca da lista attesa</button>
+
+        <div id="pesca-panel" class="pesca-panel" style="display:none">
+          <div class="pesca-panel-title">Seleziona dalla lista d'attesa</div>
+          <div class="pesca-list" id="pesca-list"></div>
+        </div>
+
         <div class="form-row">
           <label>Nome</label>
           <input type="text" id="inp-nome" placeholder="es. Luca" autocomplete="off" />
@@ -427,29 +267,46 @@
         </div>
         <div class="form-row">
           <label>Data</label>
-          <input type="date" id="inp-data" />
+          <input type="date" id="inp-data" oninput="checkFormConflict()" />
         </div>
         <div class="form-row">
           <label>Ora</label>
-          <input type="time" id="inp-ora" />
+          <input type="time" id="inp-ora" oninput="checkFormConflict()" />
         </div>
+        <div id="form-conflict-warn" class="msg-warn" style="display:none"></div>
         <div class="form-row">
           <label>Note (opzionale)</label>
           <textarea id="inp-note" placeholder="Informazioni aggiuntive..." maxlength="500" rows="3"></textarea>
         </div>
         <button class="btn" id="btn-add" onclick="addAppt()">Aggiungi appuntamento</button>
-        <button class="btn btn-ghost" id="btn-cancel-edit" onclick="cancelEdit()" style="display:none;margin-top:6px">Annulla modifica</button>
-        <div class="msg msg-ok" id="msg-ok">✓ Appuntamento aggiunto!</div>
+        <button class="btn btn-ghost" id="btn-cancel-edit" onclick="resetFormMode()" style="display:none;margin-top:6px">Annulla</button>
+        <div class="msg msg-ok" id="msg-ok">✓ Appuntamento salvato!</div>
         <div class="msg msg-err" id="msg-err">✗ Errore, riprova.</div>
       </div>
 
-      <!-- ── Calendar card (default visible) ── -->
+      <!-- ── Calendar card ── -->
       <div class="card" id="card-calendario">
-        <div class="card-title">◈ Calendario appuntamenti</div>
-        <div id="calendar"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span style="font-size:13px;color:var(--text-muted)">◈ Calendario appuntamenti</span>
+          <button id="btn-lm-mobile" class="btn-lm-mobile" onclick="openLmOverlay()">
+            📋 Lista attesa&nbsp;<span id="lm-count">0</span>
+          </button>
+        </div>
+        <div class="cal-with-sidebar">
+          <div class="cal-col"><div id="calendar"></div></div>
+          <div id="lm-sidebar" class="lm-sidebar">
+            <div class="lm-sidebar-header">
+              <span class="lm-sidebar-title">Lista d'attesa</span>
+              <button class="btn btn-ghost btn-sm" onclick="openAddLmModal()">+ Aggiungi</button>
+            </div>
+            <div class="lm-list" id="lm-list-desktop">
+              <div class="lm-empty">Nessuno in lista</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- ── List card (hidden by default) ── -->
+      <!-- ── List card ── -->
       <div class="card" id="card-lista" style="display:none">
         <div class="card-title">◈ Prossimi appuntamenti</div>
         <div class="appt-list" id="appt-list">
@@ -460,19 +317,100 @@
     </div>
   </div>
 
-  <!-- ── Event detail modal ── -->
+  <!-- ── Mobile overlay lista attesa ── -->
+  <div id="lm-overlay" class="lm-overlay" style="display:none">
+    <div class="lm-overlay-header">
+      <span class="lm-overlay-title">Lista d'attesa</span>
+      <button style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted)" onclick="closeLmOverlay()">×</button>
+    </div>
+    <button class="btn" style="margin-bottom:14px" onclick="closeLmOverlay();openAddLmModal()">+ Aggiungi</button>
+    <div class="lm-list" id="lm-list-mobile">
+      <div class="lm-empty">Nessuno in lista</div>
+    </div>
+  </div>
+
+  <!-- ── Modal evento calendario ── -->
   <div id="event-modal" class="modal-overlay" style="display:none" onclick="closeEventModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeEventModal()">×</button>
       <div id="modal-name"   class="modal-name"></div>
       <div id="modal-detail" class="modal-detail"></div>
       <div id="modal-status" class="modal-status"></div>
-      <div id="modal-notes" class="modal-notes" style="display:none"></div>
+      <div id="modal-notes"  class="modal-notes" style="display:none"></div>
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="startEdit(_modalAppt)">✏️ Modifica</button>
+        <button class="btn btn-ghost" onclick="openSwapModal(_modalAppt)">🔄 Scambia</button>
         <button class="btn btn-danger" onclick="modalDelete()">🗑 Libera slot</button>
       </div>
       <button class="btn btn-ghost" onclick="closeEventModal()" style="margin-top:8px">Annulla</button>
+    </div>
+  </div>
+
+  <!-- ── Modal aggiungi a lista attesa ── -->
+  <div id="modal-add-lm" class="modal-overlay" style="display:none" onclick="closeAddLmModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeAddLmModal()">×</button>
+      <div class="modal-name" style="margin-bottom:1rem">➕ Lista d'attesa</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-nuovo"   onclick="switchTab('nuovo')">Nuovo contatto</button>
+        <button class="tab-btn"        id="tab-rubrica" onclick="switchTab('rubrica')">Da rubrica</button>
+      </div>
+      <div id="tab-pane-nuovo">
+        <div class="form-row"><label>Nome *</label><input type="text" id="lm-nome" placeholder="es. Luca" autocomplete="off" /></div>
+        <div class="form-row"><label>Cognome</label><input type="text" id="lm-cognome" placeholder="es. Rossi" autocomplete="off" /></div>
+        <div class="form-row"><label>Telefono *</label><input type="tel" id="lm-tel" placeholder="es. 3331234567" /></div>
+        <div class="form-row"><label>Note</label><input type="text" id="lm-note" placeholder="Disponibilità, preferenze..." /></div>
+        <button class="btn" onclick="submitNewContact('LastMinute')">Aggiungi alla lista</button>
+        <div id="lm-add-err" class="msg msg-err">✗ Errore, riprova.</div>
+      </div>
+      <div id="tab-pane-rubrica" style="display:none">
+        <input type="text" class="rubrica-search" id="rubrica-search" placeholder="Cerca per nome..." oninput="renderRubrica(this.value)" />
+        <div class="rubrica-list" id="rubrica-list"></div>
+        <hr style="margin:12px 0;border:none;border-top:0.5px solid var(--border)">
+        <button class="btn btn-ghost btn-sm" style="width:100%;font-size:12px" onclick="closeAddLmModal();openNewContactModal()">
+          👤 Non trovi il cliente? Crea nuovo →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Modal nuovo contatto rubrica (Stato=Liberato) ── -->
+  <div id="modal-new-contact" class="modal-overlay" style="display:none" onclick="closeNewContactModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeNewContactModal()">×</button>
+      <div class="modal-name" style="margin-bottom:4px">👤 Nuovo contatto</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:1rem">Aggiunge in rubrica senza creare un appuntamento.</div>
+      <div class="form-row"><label>Nome *</label><input type="text" id="nc-nome" placeholder="es. Luca" autocomplete="off" /></div>
+      <div class="form-row"><label>Cognome</label><input type="text" id="nc-cognome" placeholder="es. Rossi" autocomplete="off" /></div>
+      <div class="form-row"><label>Telefono *</label><input type="tel" id="nc-tel" placeholder="es. 3331234567" /></div>
+      <div class="form-row"><label>Note</label><input type="text" id="nc-note" placeholder="Opzionale..." /></div>
+      <button class="btn" onclick="submitNewContactRubrica()">Salva in rubrica</button>
+      <div id="nc-err" class="msg msg-err">✗ Errore, riprova.</div>
+    </div>
+  </div>
+
+  <!-- ── Modal promuovi a slot ── -->
+  <div id="modal-promote" class="modal-overlay" style="display:none" onclick="closePromoteModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closePromoteModal()">×</button>
+      <div class="modal-name" id="promote-title" style="margin-bottom:4px">↗ Assegna a slot</div>
+      <div class="modal-detail" id="promote-subtitle" style="margin-bottom:1rem"></div>
+      <div class="form-row"><label>Data *</label><input type="date" id="promote-data" oninput="checkPromoteConflict()" /></div>
+      <div class="form-row"><label>Ora *</label><input type="time" id="promote-ora" oninput="checkPromoteConflict()" /></div>
+      <div id="promote-conflict-warn" class="msg-warn" style="display:none"></div>
+      <button class="btn" style="margin-top:12px" onclick="submitPromote()">Conferma appuntamento</button>
+      <div id="promote-err" class="msg msg-err">✗ Errore, riprova.</div>
+    </div>
+  </div>
+
+  <!-- ── Modal scambia appuntamenti ── -->
+  <div id="modal-swap" class="modal-overlay" style="display:none" onclick="closeSwapModal()">
+    <div class="modal-box modal-wide" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeSwapModal()">×</button>
+      <div class="modal-name" id="swap-title" style="margin-bottom:4px">🔄 Scambia con...</div>
+      <div class="modal-detail" id="swap-subtitle" style="margin-bottom:1rem"></div>
+      <div class="swap-list" id="swap-list"><div class="empty">Nessun altro appuntamento disponibile</div></div>
+      <button class="btn btn-ghost" onclick="closeSwapModal()" style="margin-top:4px">Annulla</button>
     </div>
   </div>
 
@@ -480,18 +418,26 @@
     // ─── Costanti ─────────────────────────────────────────────────────────────
     const DURATA_DEFAULT_MIN = 30;
 
-    const WEBHOOK_POST = 'https://n8n.zenith-studio.it/webhook/1e27f028-1ec0-471a-9df5-2b51d9df152c';
-    const WEBHOOK_GET  = 'https://n8n.zenith-studio.it/webhook/8a80e4be-9dc3-44d5-836b-c063dbefbbbe';
-    const WEBHOOK_DEL    = 'https://n8n.zenith-studio.it/webhook/d4ca3d3c-1b78-401e-b827-21823f8df7e2';
-    const WEBHOOK_UPDATE = 'https://n8n.zenith-studio.it/webhook/update-appuntamento';
+    const WEBHOOK_POST         = 'https://n8n.zenith-studio.it/webhook/1e27f028-1ec0-471a-9df5-2b51d9df152c';
+    const WEBHOOK_GET          = 'https://n8n.zenith-studio.it/webhook/8a80e4be-9dc3-44d5-836b-c063dbefbbbe';
+    const WEBHOOK_DEL          = 'https://n8n.zenith-studio.it/webhook/d4ca3d3c-1b78-401e-b827-21823f8df7e2';
+    const WEBHOOK_UPDATE       = 'https://n8n.zenith-studio.it/webhook/update-appuntamento';
+    const WEBHOOK_ADD_CONTATTO = 'https://n8n.zenith-studio.it/webhook/aggiungi-contatto';
+    const WEBHOOK_PROMOTE      = 'https://n8n.zenith-studio.it/webhook/promuovi-lastminute';
+    const WEBHOOK_SWAP         = 'https://n8n.zenith-studio.it/webhook/scambia-appuntamenti';
 
     // ─── Stato ────────────────────────────────────────────────────────────────
-    let appts   = [];
-    let pazienti = [];
-    let _sorted  = [];
-    let calendar = null;
-    let _modalAppt = null;
-    var _editingRowNumber = null;
+    let appts          = [];   // Confermati con data+ora
+    let lastMinuteList = [];   // LastMinute, recenti in cima
+    let rubrica        = [];   // unici per tel (tutti gli stati)
+    let pazienti       = [];   // alias rubrica per autocomplete
+    let _sorted        = [];
+    let calendar       = null;
+    let _modalAppt     = null;
+    let _promoteAppt   = null;
+    let _swapApptA     = null;
+    var _editingRowNumber   = null;
+    var _promotingRowNumber = null;
 
     // ─── Header date ──────────────────────────────────────────────────────────
     const now = new Date();
@@ -505,22 +451,45 @@
 
     function sheetDateToIso(d) {
       if (!d) return '';
-      // ISO format YYYY-MM-DD (new webhook response)
       if (/^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0, 10);
-      // Legacy DD/MM/YYYY format
       const parts = d.split('/');
       if (parts.length !== 3) return '';
       return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
 
     function fmtDate(d) {
+      if (!d) return '';
       const [y, m, g] = d.split('-');
       return g + '/' + m + '/' + y;
     }
 
     function pad(n) { return String(n).padStart(2, '0'); }
 
-    // ─── FullCalendar helpers ─────────────────────────────────────────────────
+    function waNumber(tel) {
+      let t = String(tel).replace(/[\s\-().+]/g, '');
+      if (t.startsWith('0039')) t = t.slice(4);
+      if (t.startsWith('39') && t.length === 12) t = t.slice(2);
+      return '39' + t;
+    }
+
+    function uniqueByTel(arr) {
+      const seen = new Set();
+      return arr.filter(a => {
+        if (!a.tel || seen.has(a.tel)) return false;
+        seen.add(a.tel);
+        return true;
+      });
+    }
+
+    function checkSlotConflict(data, ora, excludeRowNumber) {
+      if (!data || !ora) return null;
+      return appts.find(a =>
+        a.data === data && a.ora === ora &&
+        (excludeRowNumber === null || a.row_number !== excludeRowNumber)
+      ) || null;
+    }
+
+    // ─── FullCalendar ─────────────────────────────────────────────────────────
     function toFCEvents(list) {
       return list.map(a => {
         const ora = a.ora || '09:00';
@@ -551,17 +520,13 @@
       calendar = new FullCalendar.Calendar(el, {
         locale: 'it',
         initialView: isMobile ? 'timeGridDay' : 'timeGridWeek',
-        headerToolbar: {
-          left:   'prev,next today',
-          center: 'title',
-          right:  'timeGridDay,timeGridWeek,dayGridMonth'
-        },
-        firstDay:      1,
-        slotMinTime:   '08:00:00',
-        slotMaxTime:   '20:00:00',
-        slotDuration:  '00:30:00',
-        height:        'auto',
-        events:        toFCEvents(appts),
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridDay,timeGridWeek,dayGridMonth' },
+        firstDay: 1,
+        slotMinTime: '08:00:00',
+        slotMaxTime: '20:00:00',
+        slotDuration: '00:30:00',
+        height: 'auto',
+        events: toFCEvents(appts),
 
         dateClick(info) {
           const d = info.date;
@@ -570,6 +535,7 @@
             ? '' : `${pad(d.getHours())}:${pad(d.getMinutes())}`;
           document.getElementById('inp-data').value = dateStr;
           document.getElementById('inp-ora').value  = timeStr;
+          checkFormConflict();
           document.getElementById('inp-nome').focus();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
@@ -589,38 +555,26 @@
       document.getElementById('btn-view-cal').classList.toggle('active',  isCal);
       document.getElementById('btn-view-list').classList.toggle('active', !isCal);
       document.getElementById('main-container').classList.toggle('wide',  isCal);
-
       if (isCal) {
-        if (!calendar) {
-          initCalendar();
-        } else {
-          // Let the DOM reflow before telling FC to re-measure
-          setTimeout(() => calendar.updateSize(), 50);
-        }
+        if (!calendar) initCalendar();
+        else setTimeout(() => calendar.updateSize(), 50);
       }
     }
 
-    // ─── Event modal ──────────────────────────────────────────────────────────
+    // ─── Modal evento ─────────────────────────────────────────────────────────
     function openEventModal(appt) {
       _modalAppt = appt;
       document.getElementById('modal-name').textContent =
         appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
       document.getElementById('modal-detail').textContent =
         fmtDate(appt.data) + ' · ' + appt.ora;
-
       const statusParts = [];
       if (appt.reminder)  statusParts.push('✓ Reminder inviato');
       if (appt.retention) statusParts.push('✓ Retention inviato');
       document.getElementById('modal-status').textContent = statusParts.join('  ');
-
       const notesEl = document.getElementById('modal-notes');
-      if (appt.note) {
-        notesEl.textContent = appt.note;
-        notesEl.style.display = '';
-      } else {
-        notesEl.style.display = 'none';
-      }
-
+      if (appt.note) { notesEl.textContent = appt.note; notesEl.style.display = ''; }
+      else notesEl.style.display = 'none';
       document.getElementById('event-modal').style.display = 'flex';
     }
 
@@ -638,49 +592,74 @@
       document.getElementById('inp-data').value    = appt.data;
       document.getElementById('inp-ora').value     = appt.ora;
       document.getElementById('inp-note').value    = appt.note || '';
-      _editingRowNumber = appt.row_number;
-      const btn = document.getElementById('btn-add');
-      btn.textContent = 'Aggiorna appuntamento';
+      _editingRowNumber   = appt.row_number;
+      _promotingRowNumber = null;
+      document.getElementById('form-title-text').textContent = '✦ Modifica appuntamento';
+      document.getElementById('btn-add').textContent = 'Aggiorna appuntamento';
       document.getElementById('btn-cancel-edit').style.display = '';
+      checkFormConflict();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function cancelEdit() {
-      _editingRowNumber = null;
-      ['inp-nome', 'inp-cognome', 'inp-tel', 'inp-data', 'inp-ora', 'inp-note']
+    function resetFormMode() {
+      _editingRowNumber   = null;
+      _promotingRowNumber = null;
+      ['inp-nome','inp-cognome','inp-tel','inp-data','inp-ora','inp-note']
         .forEach(id => document.getElementById(id).value = '');
-      const btn = document.getElementById('btn-add');
-      btn.disabled = false;
-      btn.textContent = 'Aggiungi appuntamento';
+      document.getElementById('form-conflict-warn').style.display = 'none';
+      document.getElementById('btn-add').disabled    = false;
+      document.getElementById('btn-add').textContent = 'Aggiungi appuntamento';
       document.getElementById('btn-cancel-edit').style.display = 'none';
+      document.getElementById('form-title-text').textContent = '✦ Nuovo appuntamento';
+      document.getElementById('pesca-panel').style.display = 'none';
     }
+
+    function cancelEdit() { resetFormMode(); }
 
     async function modalDelete() {
       if (!_modalAppt) return;
       const appt = _modalAppt;
-      const nomeCompleto = appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
-      const conferma = `Sicuro di voler liberare lo slot di ${nomeCompleto} del ${fmtDate(appt.data)} alle ${appt.ora}?\nIl contatto cliente resta in rubrica.`;
-      if (!window.confirm(conferma)) return;
+      const nome = appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
+      if (!window.confirm(`Liberare lo slot di ${nome} del ${fmtDate(appt.data)} alle ${appt.ora}?\nIl contatto resta in rubrica.`)) return;
       closeEventModal();
-      const idx = appts.indexOf(appt);
-      if (idx !== -1) appts.splice(idx, 1);
-      render();
       try {
-        await fetch(WEBHOOK_DEL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch(WEBHOOK_DEL, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ row_number: appt.row_number })
         });
-      } catch (e) {
-        console.error('Errore liberazione slot', e);
+        if (!res.ok) throw new Error();
+        await loadData();
+      } catch(e) {
+        alert('Errore durante la liberazione dello slot. Riprova.');
       }
     }
 
+    // ─── Conflict check (form principale) ─────────────────────────────────────
+    function checkFormConflict() {
+      const data = document.getElementById('inp-data').value;
+      const ora  = document.getElementById('inp-ora').value;
+      const el   = document.getElementById('form-conflict-warn');
+      const conflict = checkSlotConflict(data, ora, _editingRowNumber);
+      if (conflict) {
+        el.textContent = `⚠️ Slot già occupato da ${conflict.nome}${conflict.cognome ? ' ' + conflict.cognome : ''}`;
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    // ─── Escape key: chiude tutti i modal ─────────────────────────────────────
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeEventModal();
+      if (e.key !== 'Escape') return;
+      closeEventModal();
+      closeAddLmModal();
+      closeNewContactModal();
+      closePromoteModal();
+      closeSwapModal();
+      closeLmOverlay();
     });
 
-    // ─── Render (stats + lista + calendario) ─────────────────────────────────
+    // ─── Render ───────────────────────────────────────────────────────────────
     function render() {
       const today    = new Date().toISOString().slice(0, 10);
       const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
@@ -689,7 +668,6 @@
       document.getElementById('stat-sent').textContent      = appts.filter(a => a.reminder).length;
       document.getElementById('stat-retention').textContent = appts.filter(a => a.retention).length;
 
-      // Lista
       _sorted = [...appts].sort((a, b) => (a.data + a.ora).localeCompare(b.data + b.ora));
       const list = document.getElementById('appt-list');
       if (!_sorted.length) {
@@ -698,7 +676,7 @@
         list.innerHTML = _sorted.map((a, i) => `
           <div class="appt-item">
             <div class="avatar">${initials(a.nome, a.cognome)}</div>
-            <div style="min-width:0; flex:1">
+            <div style="min-width:0;flex:1">
               <div class="appt-name">${a.nome}${a.cognome ? ' ' + a.cognome : ''}</div>
               <div class="appt-time">${fmtDate(a.data)} · ${a.ora}</div>
             </div>
@@ -708,8 +686,14 @@
         `).join('');
       }
 
-      // Calendario
       refreshCalendar();
+      renderLastMinute();
+
+      // Pesca button + mobile badge
+      const haslm = lastMinuteList.length > 0;
+      document.getElementById('btn-pesca').style.display = haslm ? '' : 'none';
+      document.getElementById('lm-count').textContent = lastMinuteList.length;
+      document.getElementById('btn-lm-mobile').classList.toggle('has-items', haslm);
     }
 
     // ─── Data loading ─────────────────────────────────────────────────────────
@@ -718,23 +702,29 @@
         const res  = await fetch(WEBHOOK_GET);
         const rows = await res.json();
 
-        pazienti = rows.map(r => ({
-          nome:    (r['Nome'] || '').trim(),
-          cognome: (r['Cognome'] || '').trim(),
-          tel:     String(r['Numero di telefono'] || '').trim()
-        })).filter(p => p.nome);
-
-        appts = rows.map(r => ({
+        const all = rows.map(r => ({
           nome:       (r['Nome'] || '').trim(),
           cognome:    (r['Cognome'] || '').trim(),
           tel:        String(r['Numero di telefono'] || '').trim(),
           data:       sheetDateToIso(r['Data appuntamento']),
-          ora:        r['Orario'] || '',
+          ora:        (r['Orario'] || '').trim(),
           reminder:   (r['Reminder']  || '').toString().toLowerCase() === 'mandato',
           retention:  (r['Retention'] || '').toString().toLowerCase() === 'mandato',
           note:       (r['Note'] || '').trim(),
+          stato:      (r['Stato'] || 'Confermato').trim(),
           row_number: r['row_number']
-        })).filter(a => a.nome && a.data);
+        })).filter(a => a.nome);
+
+        appts = all.filter(a =>
+          (a.stato === 'Confermato' || a.stato === '') && a.data && a.ora
+        );
+
+        lastMinuteList = all
+          .filter(a => a.stato === 'LastMinute')
+          .sort((a, b) => b.row_number - a.row_number);
+
+        rubrica  = uniqueByTel(all);
+        pazienti = rubrica.map(a => ({ nome: a.nome, cognome: a.cognome, tel: a.tel }));
 
         render();
       } catch(e) {
@@ -751,18 +741,14 @@
       const val = inpNome.value.trim().toLowerCase();
       removeAutocomplete();
       if (!val || val.length < 2) return;
-
       const matches = pazienti.filter(p =>
         p.nome.toLowerCase().startsWith(val) ||
         (p.nome + ' ' + p.cognome).toLowerCase().startsWith(val)
       ).slice(0, 5);
-
       if (!matches.length) return;
-
       const box = document.createElement('div');
       box.id = 'autocomplete-box';
       box.style.cssText = `position:absolute;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);width:${inpNome.offsetWidth}px;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.1);`;
-
       matches.forEach(p => {
         const item = document.createElement('div');
         item.textContent = p.nome + (p.cognome ? ' ' + p.cognome : '') + (p.tel ? ' · ' + p.tel : '');
@@ -778,25 +764,22 @@
         });
         box.appendChild(item);
       });
-
       inpNome.parentElement.style.position = 'relative';
       inpNome.parentElement.appendChild(box);
     });
 
     inpNome.addEventListener('blur', () => setTimeout(removeAutocomplete, 150));
-
     function removeAutocomplete() {
       const box = document.getElementById('autocomplete-box');
       if (box) box.remove();
     }
 
-    inpTel.addEventListener('input', () => {
-      inpTel.value = inpTel.value.replace(/\D/g, '');
-    });
+    inpTel.addEventListener('input', () => { inpTel.value = inpTel.value.replace(/\D/g, ''); });
 
     // ─── Validation helpers ───────────────────────────────────────────────────
     function showFieldError(id, msg) {
       const inp = document.getElementById(id);
+      if (!inp) return;
       inp.style.borderColor = 'var(--danger-text)';
       let hint = inp.parentElement.querySelector('.field-err');
       if (!hint) {
@@ -813,7 +796,7 @@
       document.querySelectorAll('input').forEach(e => e.style.borderColor = '');
     }
 
-    // ─── Add / Update appointment ─────────────────────────────────────────────
+    // ─── Add / Update / Promote ───────────────────────────────────────────────
     async function addAppt() {
       clearFieldErrors();
       const nome    = document.getElementById('inp-nome').value.trim();
@@ -823,10 +806,15 @@
       const ora     = document.getElementById('inp-ora').value;
       const note    = document.getElementById('inp-note').value.trim();
 
+      const promotingRow = _promotingRowNumber;
+      const editingRow   = _editingRowNumber;
+
       let valid = true;
-      if (!nome) { showFieldError('inp-nome', 'Campo obbligatorio'); valid = false; }
-      if (!tel)  { showFieldError('inp-tel',  'Campo obbligatorio'); valid = false; }
-      else if (tel.length < 9 || tel.length > 11) { showFieldError('inp-tel', 'Numero non valido'); valid = false; }
+      if (!promotingRow && !nome) { showFieldError('inp-nome', 'Campo obbligatorio'); valid = false; }
+      if (!promotingRow) {
+        if (!tel) { showFieldError('inp-tel', 'Campo obbligatorio'); valid = false; }
+        else if (tel.length < 9 || tel.length > 11) { showFieldError('inp-tel', 'Numero non valido'); valid = false; }
+      }
       if (!data) { showFieldError('inp-data', 'Campo obbligatorio'); valid = false; }
       if (!ora)  { showFieldError('inp-ora',  'Campo obbligatorio'); valid = false; }
       if (!valid) return;
@@ -835,57 +823,37 @@
       btn.disabled = true;
       btn.textContent = 'Salvataggio...';
 
-      const editingRow = _editingRowNumber;
-
       try {
         let res;
-        if (editingRow !== null) {
+        if (promotingRow !== null) {
+          res = await fetch(WEBHOOK_PROMOTE, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ row_number: promotingRow, 'Data appuntamento': data, 'Orario': ora })
+          });
+        } else if (editingRow !== null) {
           res = await fetch(WEBHOOK_UPDATE, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              row_number: editingRow,
-              'Nome': nome,
-              'Cognome': cognome,
-              'Numero di telefono': tel,
-              'Data appuntamento': data,
-              'Orario': ora,
-              'Note': note
-            })
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ row_number: editingRow, 'Nome': nome, 'Cognome': cognome, 'Numero di telefono': tel, 'Data appuntamento': data, 'Orario': ora, 'Note': note })
           });
         } else {
           res = await fetch(WEBHOOK_POST, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nome, cognome, telefono: tel, data, ora, note })
           });
         }
-
         if (!res.ok) throw new Error();
-
-        if (editingRow !== null) {
-          const idx = appts.findIndex(a => a.row_number === editingRow);
-          if (idx !== -1) appts[idx] = { ...appts[idx], nome, cognome, tel, data, ora, note };
-          cancelEdit();
-        } else {
-          appts.push({ nome, cognome, tel, data, ora, note, reminder: false, retention: false });
-          if (!pazienti.find(p => p.nome === nome && p.cognome === cognome)) {
-            pazienti.push({ nome, cognome, tel });
-          }
-          ['inp-nome', 'inp-cognome', 'inp-tel', 'inp-data', 'inp-ora', 'inp-note']
-            .forEach(id => document.getElementById(id).value = '');
-          btn.disabled = false;
-          btn.textContent = 'Aggiungi appuntamento';
-        }
 
         const ok = document.getElementById('msg-ok');
         ok.style.display = 'block';
         setTimeout(() => ok.style.display = 'none', 2500);
-
-        render();
-      } catch (e) {
+        resetFormMode();
+        await loadData();
+      } catch(e) {
         btn.disabled = false;
-        if (editingRow !== null) {
+        if (promotingRow !== null) {
+          btn.textContent = 'Conferma appuntamento';
+          alert('Errore durante la conferma. Riprova.');
+        } else if (editingRow !== null) {
           btn.textContent = 'Aggiorna appuntamento';
           alert('Errore durante l\'aggiornamento. Riprova.');
         } else {
@@ -897,17 +865,338 @@
       }
     }
 
-    // ─── Delete appointment (from list) ───────────────────────────────────────
+    // ─── Delete (lista view, legacy ottimistico) ──────────────────────────────
     async function deleteAppt(i) {
       const item = _sorted[i];
       const idx  = appts.indexOf(item);
       if (idx !== -1) appts.splice(idx, 1);
       render();
       fetch(WEBHOOK_DEL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ row_number: item.row_number })
       }).catch(e => console.error('Errore eliminazione', e));
+    }
+
+    // ─── Lista attesa — render card ───────────────────────────────────────────
+    function lmCardHTML(a, idx) {
+      const nome = a.nome + (a.cognome ? ' ' + a.cognome : '');
+      const noteShort = a.note ? (a.note.length > 50 ? a.note.slice(0, 50) + '…' : a.note) : '';
+      const titleAttr = a.note ? ` title="${a.note.replace(/"/g, '&quot;')}"` : '';
+      const wa = waNumber(a.tel);
+      return `
+        <div class="lm-card">
+          <div class="lm-card-name">${nome}</div>
+          <div class="lm-card-tel">${a.tel || '—'}</div>
+          ${noteShort ? `<div class="lm-card-note"${titleAttr}>${noteShort}</div>` : ''}
+          <div class="lm-card-actions">
+            <a class="lm-icon-btn" href="tel:${a.tel}" title="Chiama">📞</a>
+            <a class="lm-icon-btn" href="https://wa.me/${wa}" target="_blank" rel="noopener" title="WhatsApp">💬</a>
+            <button class="lm-icon-btn" onclick="openPromoteModal(lastMinuteList[${idx}])" title="Assegna a slot">↗</button>
+            <button class="lm-icon-btn danger" onclick="removeFromLastMinute(lastMinuteList[${idx}])" title="Rimuovi">🗑</button>
+          </div>
+        </div>`;
+    }
+
+    function renderLastMinute() {
+      const html = lastMinuteList.length
+        ? lastMinuteList.map((a, i) => lmCardHTML(a, i)).join('')
+        : '<div class="lm-empty">Nessuno in lista</div>';
+      document.getElementById('lm-list-desktop').innerHTML = html;
+      document.getElementById('lm-list-mobile').innerHTML  = html;
+    }
+
+    // ─── Mobile overlay ───────────────────────────────────────────────────────
+    function openLmOverlay()  { document.getElementById('lm-overlay').style.display = 'flex'; }
+    function closeLmOverlay() { document.getElementById('lm-overlay').style.display = 'none'; }
+
+    // ─── Pesca da lista attesa ────────────────────────────────────────────────
+    function togglePescaPanel() {
+      const panel = document.getElementById('pesca-panel');
+      const isOpen = panel.style.display !== 'none';
+      if (!isOpen) renderPesca();
+      panel.style.display = isOpen ? 'none' : '';
+    }
+
+    function renderPesca() {
+      const list = document.getElementById('pesca-list');
+      if (!lastMinuteList.length) {
+        list.innerHTML = '<div class="lm-empty">Lista attesa vuota</div>';
+        return;
+      }
+      list.innerHTML = lastMinuteList.map((a, i) => {
+        const nome = a.nome + (a.cognome ? ' ' + a.cognome : '');
+        const noteShort = a.note ? (a.note.length > 50 ? a.note.slice(0, 50) + '…' : a.note) : '';
+        const titleAttr = a.note ? ` title="${a.note.replace(/"/g,'&quot;')}"` : '';
+        return `
+          <div class="pesca-card" onclick="selectFromPesca(lastMinuteList[${i}])">
+            <div class="pesca-card-name">${nome}</div>
+            <div class="pesca-card-tel">${a.tel || '—'}</div>
+            ${noteShort ? `<div class="pesca-card-note"${titleAttr}>${noteShort}</div>` : ''}
+          </div>`;
+      }).join('');
+    }
+
+    function selectFromPesca(appt) {
+      _promotingRowNumber = appt.row_number;
+      _editingRowNumber   = null;
+      document.getElementById('inp-nome').value    = appt.nome;
+      document.getElementById('inp-cognome').value = appt.cognome;
+      document.getElementById('inp-tel').value     = appt.tel;
+      document.getElementById('inp-note').value    = appt.note || '';
+      document.getElementById('form-title-text').textContent = '✦ Conferma slot — ' + appt.nome;
+      document.getElementById('btn-add').textContent = 'Conferma appuntamento';
+      document.getElementById('btn-cancel-edit').style.display = '';
+      document.getElementById('pesca-panel').style.display = 'none';
+      checkFormConflict();
+    }
+
+    // ─── Modal aggiungi lista attesa ──────────────────────────────────────────
+    function openAddLmModal() {
+      closeLmOverlay();
+      ['lm-nome','lm-cognome','lm-tel','lm-note'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('lm-add-err').style.display = 'none';
+      switchTab('nuovo');
+      document.getElementById('modal-add-lm').style.display = 'flex';
+    }
+    function closeAddLmModal() { document.getElementById('modal-add-lm').style.display = 'none'; }
+
+    function switchTab(t) {
+      document.getElementById('tab-pane-nuovo').style.display   = t === 'nuovo'   ? '' : 'none';
+      document.getElementById('tab-pane-rubrica').style.display = t === 'rubrica' ? '' : 'none';
+      document.getElementById('tab-nuovo').classList.toggle('active',   t === 'nuovo');
+      document.getElementById('tab-rubrica').classList.toggle('active', t === 'rubrica');
+      if (t === 'rubrica') {
+        document.getElementById('rubrica-search').value = '';
+        renderRubrica('');
+      }
+    }
+
+    function renderRubrica(filter) {
+      const q = (filter || '').toLowerCase().trim();
+      const matches = rubrica.filter(p => {
+        const full = (p.nome + ' ' + p.cognome).toLowerCase();
+        return !q || full.includes(q);
+      });
+      const el = document.getElementById('rubrica-list');
+      if (!matches.length) {
+        el.innerHTML = '<div class="lm-empty" style="padding:1rem 0">Nessun risultato</div>';
+        return;
+      }
+      el.innerHTML = matches.map(p => {
+        const idx = rubrica.indexOf(p);
+        return `
+          <div class="rubrica-item" onclick="addFromRubrica(${idx})">
+            <div class="rubrica-item-name">${p.nome}${p.cognome ? ' ' + p.cognome : ''}</div>
+            <div class="rubrica-item-tel">${p.tel || '—'}</div>
+          </div>`;
+      }).join('');
+    }
+
+    async function addFromRubrica(idx) {
+      const p = rubrica[idx];
+      if (!p) return;
+      const nome = p.nome + (p.cognome ? ' ' + p.cognome : '');
+      if (!window.confirm(`Aggiungere ${nome} alla lista d'attesa?`)) return;
+      closeAddLmModal();
+      try {
+        const res = await fetch(WEBHOOK_ADD_CONTATTO, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'Nome': p.nome, 'Cognome': p.cognome, 'Numero di telefono': p.tel, 'Note': p.note || '', 'Stato': 'LastMinute' })
+        });
+        if (!res.ok) throw new Error();
+        await loadData();
+      } catch(e) {
+        alert('Errore durante l\'aggiunta. Riprova.');
+      }
+    }
+
+    async function submitNewContact(stato) {
+      const nome = document.getElementById('lm-nome').value.trim();
+      const cog  = document.getElementById('lm-cognome').value.trim();
+      const tel  = document.getElementById('lm-tel').value.trim();
+      const note = document.getElementById('lm-note').value.trim();
+      if (!nome || !tel) { alert('Nome e telefono sono obbligatori.'); return; }
+      document.getElementById('lm-add-err').style.display = 'none';
+      try {
+        const res = await fetch(WEBHOOK_ADD_CONTATTO, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'Nome': nome, 'Cognome': cog, 'Numero di telefono': tel, 'Note': note, 'Stato': stato })
+        });
+        if (!res.ok) throw new Error();
+        closeAddLmModal();
+        await loadData();
+      } catch(e) {
+        document.getElementById('lm-add-err').style.display = 'block';
+      }
+    }
+
+    // ─── Modal nuovo contatto rubrica ─────────────────────────────────────────
+    function openNewContactModal() {
+      ['nc-nome','nc-cognome','nc-tel','nc-note'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('nc-err').style.display = 'none';
+      document.getElementById('modal-new-contact').style.display = 'flex';
+    }
+    function closeNewContactModal() { document.getElementById('modal-new-contact').style.display = 'none'; }
+
+    async function submitNewContactRubrica() {
+      const nome = document.getElementById('nc-nome').value.trim();
+      const cog  = document.getElementById('nc-cognome').value.trim();
+      const tel  = document.getElementById('nc-tel').value.trim();
+      const note = document.getElementById('nc-note').value.trim();
+      if (!nome || !tel) { alert('Nome e telefono sono obbligatori.'); return; }
+      document.getElementById('nc-err').style.display = 'none';
+      try {
+        const res = await fetch(WEBHOOK_ADD_CONTATTO, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 'Nome': nome, 'Cognome': cog, 'Numero di telefono': tel, 'Note': note, 'Stato': 'Liberato' })
+        });
+        if (!res.ok) throw new Error();
+        closeNewContactModal();
+        await loadData();
+      } catch(e) {
+        document.getElementById('nc-err').style.display = 'block';
+      }
+    }
+
+    // ─── Rimuovi da lista attesa ──────────────────────────────────────────────
+    async function removeFromLastMinute(appt) {
+      const nome = appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
+      if (!window.confirm(`Rimuovere ${nome} dalla lista d'attesa?\nIl contatto resterà in rubrica.`)) return;
+      try {
+        const res = await fetch(WEBHOOK_DEL, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ row_number: appt.row_number })
+        });
+        if (!res.ok) throw new Error();
+        await loadData();
+      } catch(e) {
+        alert('Errore durante la rimozione. Riprova.');
+      }
+    }
+
+    // ─── Modal promuovi a slot (sidebar) ──────────────────────────────────────
+    function openPromoteModal(appt) {
+      _promoteAppt = appt;
+      const nome = appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
+      document.getElementById('promote-title').textContent    = '↗ Assegna a slot';
+      document.getElementById('promote-subtitle').textContent = nome + (appt.tel ? ' · ' + appt.tel : '');
+      document.getElementById('promote-data').value = '';
+      document.getElementById('promote-ora').value  = '';
+      document.getElementById('promote-data').min   = new Date().toISOString().slice(0, 10);
+      document.getElementById('promote-conflict-warn').style.display = 'none';
+      document.getElementById('promote-err').style.display = 'none';
+      document.getElementById('modal-promote').style.display = 'flex';
+    }
+    function closePromoteModal() {
+      document.getElementById('modal-promote').style.display = 'none';
+      _promoteAppt = null;
+    }
+
+    function checkPromoteConflict() {
+      const data = document.getElementById('promote-data').value;
+      const ora  = document.getElementById('promote-ora').value;
+      const el   = document.getElementById('promote-conflict-warn');
+      const conflict = checkSlotConflict(data, ora, null);
+      if (conflict) {
+        el.textContent = `⚠️ Slot già occupato da ${conflict.nome}${conflict.cognome ? ' ' + conflict.cognome : ''}`;
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    async function submitPromote() {
+      if (!_promoteAppt) return;
+      const data = document.getElementById('promote-data').value;
+      const ora  = document.getElementById('promote-ora').value;
+      if (!data || !ora) { alert('Seleziona data e orario.'); return; }
+      document.getElementById('promote-err').style.display = 'none';
+      try {
+        const res = await fetch(WEBHOOK_PROMOTE, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ row_number: _promoteAppt.row_number, 'Data appuntamento': data, 'Orario': ora })
+        });
+        if (!res.ok) throw new Error();
+        closePromoteModal();
+        await loadData();
+      } catch(e) {
+        document.getElementById('promote-err').style.display = 'block';
+      }
+    }
+
+    // ─── Modal scambia appuntamenti ───────────────────────────────────────────
+    function openSwapModal(apptA) {
+      if (!apptA) return;
+      closeEventModal();
+      _swapApptA = apptA;
+      const nomeA = apptA.nome + (apptA.cognome ? ' ' + apptA.cognome : '');
+      document.getElementById('swap-title').textContent    = '🔄 Scambia con...';
+      document.getElementById('swap-subtitle').textContent = `${nomeA} — ${fmtDate(apptA.data)} alle ${apptA.ora}`;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const candidates = appts
+        .filter(a => a.row_number !== apptA.row_number && a.data >= today)
+        .sort((a, b) => (a.data + a.ora).localeCompare(b.data + b.ora));
+
+      const listEl = document.getElementById('swap-list');
+      if (!candidates.length) {
+        listEl.innerHTML = '<div class="empty">Nessun altro appuntamento futuro disponibile</div>';
+      } else {
+        listEl.innerHTML = candidates.map(b => `
+          <div class="swap-item" onclick="confirmSwap(${b.row_number})">
+            <div>
+              <div class="swap-item-name">${b.nome}${b.cognome ? ' ' + b.cognome : ''}</div>
+              <div class="swap-item-time">${fmtDate(b.data)} · ${b.ora}</div>
+            </div>
+            <span style="font-size:18px;color:var(--text-hint)">→</span>
+          </div>`).join('');
+      }
+
+      document.getElementById('modal-swap').style.display = 'flex';
+    }
+
+    function closeSwapModal() {
+      document.getElementById('modal-swap').style.display = 'none';
+      _swapApptA = null;
+    }
+
+    async function confirmSwap(rowNumberB) {
+      if (!_swapApptA) return;
+      const apptB = appts.find(a => a.row_number === rowNumberB);
+      if (!apptB) return;
+
+      const nomeA = _swapApptA.nome + (_swapApptA.cognome ? ' ' + _swapApptA.cognome : '');
+      const nomeB = apptB.nome + (apptB.cognome ? ' ' + apptB.cognome : '');
+
+      const msg =
+        `Hai contattato entrambi i clienti? Confermi lo scambio?\n\n` +
+        `• ${nomeA}: ${fmtDate(_swapApptA.data)} ${_swapApptA.ora} → ${fmtDate(apptB.data)} ${apptB.ora}\n` +
+        `• ${nomeB}: ${fmtDate(apptB.data)} ${apptB.ora} → ${fmtDate(_swapApptA.data)} ${_swapApptA.ora}`;
+
+      if (!window.confirm(msg)) return;
+
+      // A riceve data/ora di B, B riceve data/ora di A
+      const payload = {
+        row_number_a: _swapApptA.row_number,
+        data_a_new:   apptB.data,
+        orario_a_new: apptB.ora,
+        row_number_b: apptB.row_number,
+        data_b_new:   _swapApptA.data,
+        orario_b_new: _swapApptA.ora
+      };
+
+      closeSwapModal();
+
+      try {
+        const res = await fetch(WEBHOOK_SWAP, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error();
+        await loadData();
+      } catch(e) {
+        alert('Errore durante lo scambio. Riprova.');
+      }
     }
 
     // ─── Init ─────────────────────────────────────────────────────────────────
