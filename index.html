@@ -2,13 +2,29 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestione Appuntamenti</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Il tuo Salone — Appuntamenti</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0E0B14" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#FAFAFB" media="(prefers-color-scheme: light)">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Il tuo Salone">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/it.global.min.js"></script>
+  <script>
+    // Tema: applica PRIMA del paint per evitare FOUC
+    (function() {
+      const stored = localStorage.getItem('theme');
+      const sys = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = stored || sys;
+    })();
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -217,9 +233,452 @@
     .fc .fc-event { cursor: pointer; border-radius: 4px !important; font-size: 12px !important; }
     .fc .fc-event:hover { opacity: 0.85; }
     .fc .fc-scrollgrid-section-liquid > td { border: none; }
+
+    /* ════════════════════════════════════════════════════════════════════
+       ZENITH RESTYLE — Design System override
+       Tutto sotto questo banner è additivo/override estetico.
+       Nessuna struttura DOM esistente è stata rinominata.
+       ════════════════════════════════════════════════════════════════════ */
+
+    /* ── Geist font on body + mono on numeric ── */
+    body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .appt-time,
+    .lm-card-tel,
+    .swap-item-time,
+    .pesca-card-tel,
+    .rubrica-item-tel,
+    .fc-event-time,
+    .fc .fc-list-event-time,
+    .fc .fc-col-header-cell-cushion,
+    .fc .fc-daygrid-day-number,
+    .fc .fc-timegrid-slot-label-cushion,
+    #hdr-date,
+    .stat-val,
+    .modal-detail,
+    .mono { font-family: 'Geist Mono', ui-monospace, monospace; font-feature-settings: 'tnum'; }
+
+    /* ── Design tokens (theme-aware) ── */
+    :root[data-theme="dark"] {
+      --bg-primary: #0E0B14;
+      --bg-secondary: #1A1620;
+      --bg-elevated: #251F2E;
+      --border: #2D2638;
+      --border-strong: #3D3548;
+      --text-primary: #F4F1F8;
+      --text-secondary: #A89FB5;
+      --text-muted: #6B6378;
+      --accent: #7B6FA8;
+      --accent-hover: #9183C0;
+      --accent-glow: rgba(123, 111, 168, 0.25);
+      --success: #4ADE80;
+      --warning: #FBBF24;
+      --danger: #F87171;
+      --info: #60A5FA;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.45);
+      --shadow-glow: 0 0 24px var(--accent-glow);
+      --modal-veil: rgba(14, 11, 20, 0.72);
+    }
+    :root[data-theme="light"] {
+      --bg-primary: #FAFAFB;
+      --bg-secondary: #FFFFFF;
+      --bg-elevated: #FFFFFF;
+      --border: #E5E3EA;
+      --border-strong: #CDC8D6;
+      --text-primary: #1A1620;
+      --text-secondary: #5D5470;
+      --text-muted: #8E8499;
+      --accent: #4A3F70;
+      --accent-hover: #3B3358;
+      --accent-glow: rgba(74, 63, 112, 0.18);
+      --success: #16A34A;
+      --warning: #D97706;
+      --danger: #DC2626;
+      --info: #2563EB;
+      --shadow-sm: 0 1px 2px rgba(20,15,30,0.05);
+      --shadow-md: 0 4px 14px rgba(20,15,30,0.08);
+      --shadow-lg: 0 12px 32px rgba(20,15,30,0.12);
+      --shadow-glow: 0 0 24px var(--accent-glow);
+      --modal-veil: rgba(250, 250, 251, 0.65);
+    }
+
+    /* ── Spacing + radius scale ── */
+    :root {
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+      --space-4: 1rem;    --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem;
+      --radius-md: 10px; --radius-lg: 14px; --radius-xl: 20px;
+      --radius-full: 9999px;
+      --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
+      --text-lg: 1.125rem; --text-xl: 1.25rem; --text-2xl: 1.5rem;
+    }
+
+    /* ── Legacy aliases — il CSS esistente continua a funzionare ── */
+    :root {
+      --bg: var(--bg-primary);
+      --surface: var(--bg-secondary);
+      --text: var(--text-primary);
+      --text-hint: var(--text-muted);
+      --radius: var(--radius-lg);
+      --radius-sm: 6px;
+      --success-bg: color-mix(in srgb, var(--success) 15%, transparent);
+      --success-text: var(--success);
+      --warning-bg: color-mix(in srgb, var(--warning) 15%, transparent);
+      --warning-text: var(--warning);
+      --danger-bg: color-mix(in srgb, var(--danger) 15%, transparent);
+      --danger-text: var(--danger);
+      --info-bg: color-mix(in srgb, var(--info) 15%, transparent);
+      --info-text: var(--info);
+    }
+
+    html { color-scheme: dark; transition: background-color 0.3s ease; }
+    :root[data-theme="light"] html { color-scheme: light; }
+    body { background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s ease, color 0.3s ease; padding-top: 76px; }
+
+    /* ── Override colore card/bordi (cascade aggressivo) ── */
+    .card { background: var(--bg-secondary); border-color: var(--border); border-radius: var(--radius-lg); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), border-color 0.3s, box-shadow 0.3s, background 0.3s; }
+    @media (hover: hover) {
+      .card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+    }
+    .stat { background: var(--bg-secondary); border-color: var(--border); transition: background 0.3s, border-color 0.3s, transform 0.2s; }
+    @media (hover: hover) {
+      .stat:hover { transform: translateY(-1px); border-color: var(--border-strong); }
+    }
+
+    .view-toggle { background: var(--bg-secondary); border-color: var(--border); }
+    .toggle-btn { color: var(--text-secondary); transition: background 0.18s, color 0.18s, transform 0.12s; }
+    .toggle-btn:active { transform: scale(0.96); }
+    .toggle-btn.active { background: var(--accent); color: #fff; }
+    .toggle-btn:not(.active):hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+    .form-row input, .form-row textarea, .rubrica-search {
+      background: var(--bg-primary); color: var(--text-primary); border-color: var(--border);
+      font-family: inherit; transition: border-color 0.18s, background 0.2s;
+    }
+    .form-row input:focus, .form-row textarea:focus, .rubrica-search:focus { border-color: var(--accent); }
+
+    .btn { background: var(--accent); color: #fff; transition: background 0.18s, transform 0.12s, box-shadow 0.18s; }
+    .btn:hover { opacity: 1; background: var(--accent-hover); box-shadow: var(--shadow-glow); }
+    .btn:active { transform: scale(0.98); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: var(--danger); opacity: 0.88; box-shadow: 0 0 24px color-mix(in srgb, var(--danger) 35%, transparent); }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border-color: var(--border); }
+    .btn-ghost:hover { background: var(--bg-elevated); color: var(--text-primary); opacity: 1; box-shadow: none; }
+
+    .tab-btn { color: var(--text-secondary); }
+    .tab-btn.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+
+    .badge-pending { background: color-mix(in srgb, var(--warning) 18%, transparent); color: var(--warning); }
+    .badge-sent { background: color-mix(in srgb, var(--success) 18%, transparent); color: var(--success); }
+
+    .appt-item { background: var(--bg-primary); border: 1px solid var(--border); transition: border-color 0.2s, transform 0.15s; }
+    .appt-item:hover { border-color: var(--border-strong); }
+    .avatar { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent-hover); }
+
+    .lm-card { background: var(--bg-primary); border: 1px solid var(--border); position: relative; transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s; }
+    @media (hover: hover) {
+      .lm-card:hover { border-color: var(--border-strong); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    }
+    .lm-card.tap-active { border-color: var(--accent); box-shadow: var(--shadow-glow); }
+    .lm-icon-btn { background: var(--bg-secondary); border-color: var(--border); color: var(--text-primary); transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.1s; }
+    .lm-icon-btn:hover { background: var(--bg-elevated); border-color: var(--accent); color: var(--accent-hover); }
+    .lm-icon-btn:active { transform: scale(0.92); }
+    .lm-icon-btn.danger:hover { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); border-color: var(--danger); }
+
+    .lm-sidebar { border-left-color: var(--border); }
+    .lm-empty { color: var(--text-muted); }
+
+    .pesca-panel { background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+    .pesca-panel-title { color: var(--accent-hover); }
+    .pesca-card { background: var(--bg-elevated); border-color: var(--border); }
+    .pesca-card:hover { background: var(--bg-secondary); border-color: var(--accent); }
+
+    .rubrica-item:hover { background: var(--bg-elevated); }
+
+    .swap-item { background: var(--bg-primary); border: 1px solid var(--border); }
+    .swap-item:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: var(--accent); }
+
+    .btn-lm-mobile { background: var(--bg-secondary); border-color: var(--border); color: var(--text-secondary); transition: background 0.2s, border-color 0.2s, transform 0.12s; }
+    .btn-lm-mobile:active { transform: scale(0.96); }
+    .lm-overlay { background: var(--bg-primary); }
+
+    /* ── Modal — glassmorphism + entrance animation ── */
+    .modal-overlay { background: var(--modal-veil); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); animation: zenith-fade-in 0.22s ease-out; }
+    .modal-box { background: var(--bg-elevated); border: 1px solid var(--border); box-shadow: var(--shadow-lg); animation: zenith-modal-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .modal-name { color: var(--text-primary); }
+    .modal-detail { color: var(--text-secondary); }
+    .modal-status { color: var(--text-secondary); }
+    .modal-notes { background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-secondary); }
+    .modal-close { color: var(--text-muted); transition: color 0.15s, transform 0.15s; }
+    .modal-close:hover { color: var(--text-primary); transform: scale(1.15); }
+
+    @keyframes zenith-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes zenith-modal-pop {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ── App header sticky ── */
+    .app-header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 60px; padding: 0 var(--space-6);
+      display: flex; align-items: center; gap: var(--space-3);
+      background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .app-logo {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 13px; letter-spacing: 0.02em;
+      box-shadow: var(--shadow-glow);
+      flex-shrink: 0;
+    }
+    .app-brand {
+      font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+    .app-zenith {
+      font-size: 10px; color: var(--text-muted);
+      margin-left: auto; padding-right: var(--space-3);
+      letter-spacing: 0.02em;
+      display: inline-flex; align-items: center;
+    }
+    .app-zenith span { font-weight: 500; color: var(--accent-hover); margin-left: 4px; }
+    @media (max-width: 580px) {
+      .app-header { padding: 0 var(--space-4); }
+      .app-zenith { display: none; }
+    }
+
+    .theme-toggle {
+      width: 38px; height: 38px;
+      border-radius: var(--radius-full);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--bg-elevated); border-color: var(--accent); color: var(--accent-hover); }
+    .theme-toggle:active { transform: scale(0.92); }
+    .theme-toggle svg { width: 18px; height: 18px; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+    :root[data-theme="dark"]  .theme-toggle .icon-sun  { display: block; }
+    :root[data-theme="dark"]  .theme-toggle .icon-moon { display: none;  }
+    :root[data-theme="light"] .theme-toggle .icon-sun  { display: none;  }
+    :root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+    .theme-toggle:active svg { transform: rotate(180deg); }
+
+    /* ── Old header restyled (more discreet) ── */
+    .container > header { padding: var(--space-2) 0 var(--space-4); border-bottom: 1px solid var(--border); }
+    .container > header h1 { font-size: var(--text-lg); font-weight: 500; letter-spacing: -0.01em; color: var(--text-primary); }
+    .container > header span { color: var(--text-secondary); font-size: var(--text-sm); }
+
+    /* ── Stat cards refresh ── */
+    .stat { border-radius: var(--radius-md); padding: var(--space-4); border: 1px solid var(--border); }
+    .stat-label { color: var(--text-secondary); font-size: var(--text-xs); letter-spacing: 0.02em; text-transform: uppercase; }
+    .stat-val   { color: var(--text-primary); font-size: var(--text-2xl); font-weight: 500; letter-spacing: -0.02em; }
+
+    /* ── Container width tweak ── */
+    .container.wide { max-width: 1400px; }
+    .container.wide .grid { grid-template-columns: 280px 1fr; gap: var(--space-6); }
+    .lm-sidebar { width: 300px; min-width: 300px; }
+
+    /* ── Toast ── */
+    #toast-container {
+      position: fixed; bottom: var(--space-6); right: var(--space-6);
+      display: flex; flex-direction: column-reverse; gap: var(--space-2);
+      z-index: 9500; pointer-events: none;
+      max-width: calc(100vw - var(--space-8));
+    }
+    .toast {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--info);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+      display: flex; align-items: center; gap: 10px;
+      min-width: 260px; max-width: 360px;
+      animation: toast-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: auto;
+    }
+    .toast.toast-success { border-left-color: var(--success); }
+    .toast.toast-error   { border-left-color: var(--danger);  }
+    .toast.toast-info    { border-left-color: var(--info);    }
+    .toast .toast-icon {
+      width: 22px; height: 22px; border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+    }
+    .toast.toast-success .toast-icon { background: color-mix(in srgb, var(--success) 22%, transparent); color: var(--success); }
+    .toast.toast-error   .toast-icon { background: color-mix(in srgb, var(--danger) 22%, transparent);  color: var(--danger);  }
+    .toast.toast-info    .toast-icon { background: color-mix(in srgb, var(--info) 22%, transparent);    color: var(--info);    }
+    .toast.toast-leaving { animation: toast-slide-out 0.22s ease-in forwards; }
+    @keyframes toast-slide-in  { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toast-slide-out { to   { opacity: 0; transform: translateX(40px); } }
+    @media (max-width: 580px) {
+      #toast-container { left: var(--space-3); right: var(--space-3); bottom: var(--space-3); max-width: none; }
+      .toast { min-width: 0; max-width: 100%; }
+    }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg,
+        var(--bg-primary) 0%,
+        var(--bg-elevated) 50%,
+        var(--bg-primary) 100%);
+      background-size: 200% 100%;
+      animation: skeleton-pulse 1.4s ease-in-out infinite;
+      border-radius: var(--radius-sm);
+    }
+    @keyframes skeleton-pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-card { padding: 14px 12px; border-radius: var(--radius-md); background: var(--bg-primary); border: 1px solid var(--border); margin-bottom: 8px; }
+    .skeleton-line { height: 12px; border-radius: 4px; margin-bottom: 8px; }
+    .skeleton-line.s-name { width: 60%; height: 14px; }
+    .skeleton-line.s-tel  { width: 45%; }
+    .skeleton-line.s-row  { width: 100%; height: 36px; margin-top: 4px; }
+
+    /* ── Animated gradient border for .lm-card (desktop hover + mobile tap) ── */
+    @property --zenith-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+    .lm-card { isolation: isolate; }
+    .lm-card::before {
+      content: ''; position: absolute; inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      background: conic-gradient(from var(--zenith-angle, 0deg),
+        transparent 0deg,
+        var(--accent) 90deg,
+        var(--accent-hover) 130deg,
+        transparent 240deg);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+              mask-composite: exclude;
+      animation: zenith-rotate-border 4s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    @media (hover: hover) { .lm-card:hover::before { opacity: 1; } }
+    .lm-card.tap-active::before { opacity: 1; }
+    @keyframes zenith-rotate-border { to { --zenith-angle: 360deg; } }
+    @supports not (background: conic-gradient(from 0deg, red, blue)) {
+      .lm-card::before { display: none; }
+    }
+
+    /* ── FullCalendar polish ── */
+    .fc { font-family: 'Geist', -apple-system, sans-serif; color: var(--text-primary); }
+    .fc .fc-toolbar-title { color: var(--text-primary); font-weight: 500; letter-spacing: -0.01em; }
+    .fc .fc-button, .fc .fc-button-primary {
+      background: var(--accent) !important;
+      border-color: var(--accent) !important;
+      color: #fff;
+      transition: background 0.18s, transform 0.1s;
+    }
+    .fc .fc-button:hover { background: var(--accent-hover) !important; border-color: var(--accent-hover) !important; opacity: 1; }
+    .fc .fc-button:active { transform: scale(0.96); }
+    .fc-theme-standard td, .fc-theme-standard th, .fc .fc-scrollgrid { border-color: var(--border) !important; }
+    .fc .fc-daygrid-day.fc-day-today,
+    .fc .fc-timegrid-col.fc-day-today { background: color-mix(in srgb, var(--accent) 8%, transparent) !important; }
+    .fc-theme-standard .fc-scrollgrid { background: transparent; }
+    .fc .fc-col-header-cell, .fc .fc-timegrid-axis { background: var(--bg-secondary); }
+    .fc .fc-timegrid-slot-label { color: var(--text-muted); font-size: 11px; }
+    .fc .fc-event {
+      background: var(--accent) !important;
+      border-color: var(--accent-hover) !important;
+      border-radius: var(--radius-sm) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      padding: 1px 4px;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    }
+    .fc .fc-event:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); opacity: 1; }
+    .fc .fc-event-time { font-weight: 500; }
+    .fc-day-other { background: color-mix(in srgb, var(--bg-primary) 50%, transparent); }
+    .fc a { color: var(--text-primary); }
+
+    /* ── Mobile optimization ── */
+    @media (max-width: 768px) {
+      body { font-size: 15px; padding: 1rem 0.75rem 3rem; padding-top: 72px; }
+      .card { padding: var(--space-4); border-radius: var(--radius-md); }
+      .stat { padding: var(--space-3); }
+      .stat-val { font-size: var(--text-xl); }
+      .lm-list { gap: var(--space-3); }
+      .lm-icon-btn { padding: 6px 0; font-size: 13px; min-height: 32px; }
+      .modal-box { max-width: 92vw; padding: var(--space-4); border-radius: var(--radius-lg); }
+      .btn { min-height: 44px; padding: 10px; font-size: 14px; }
+      .lm-card-actions { gap: 5px; }
+      .fc .fc-toolbar.fc-header-toolbar { gap: 4px; row-gap: 8px; }
+      .fc .fc-button { padding: 5px 10px; font-size: 11px; }
+      .fc .fc-toolbar-title { font-size: 14px; }
+    }
+    @media (max-width: 580px) {
+      .modal-overlay { padding: 0; }
+      .modal-box { max-width: 100%; padding: var(--space-4); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+    }
+    @media (max-width: 400px) {
+      .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: stretch; }
+      .fc .fc-toolbar-chunk:nth-child(3) { display: flex; justify-content: center; }
+      .fc .fc-toolbar-chunk:nth-child(3) .fc-button-group .fc-button:not(.fc-button-active) { display: none; }
+      .fc .fc-toolbar-chunk:nth-child(3) .fc-button-group { display: inline-flex; gap: 4px; }
+    }
+
+    /* ── Magnetic helper (gestito da JS via custom property) ── */
+    .magnetic { will-change: transform; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+    @media (hover: none) { .magnetic { transform: none !important; } }
+
+    /* ── Long-press visual feedback ── */
+    .longpress-active { animation: longpress-pulse 0.6s ease-in-out; }
+    @keyframes longpress-pulse {
+      0%   { transform: scale(1);    box-shadow: 0 0 0 var(--accent-glow); }
+      50%  { transform: scale(0.97); box-shadow: 0 0 24px var(--accent-glow); }
+      100% { transform: scale(1);    box-shadow: 0 0 0 var(--accent-glow); }
+    }
+
+    /* ── Misc fixes ── */
+    .form-row label { color: var(--text-secondary); font-size: var(--text-xs); letter-spacing: 0.02em; text-transform: uppercase; }
+    ::placeholder { color: var(--text-muted); }
+    .empty { color: var(--text-muted); }
+    .card-title { color: var(--text-secondary); font-size: var(--text-xs); letter-spacing: 0.04em; text-transform: uppercase; }
+    .lm-sidebar-title { color: var(--text-secondary); font-size: var(--text-xs); letter-spacing: 0.04em; text-transform: uppercase; font-weight: 500; }
+    .field-err { color: var(--danger) !important; }
+
+    /* Geist mono per orari nei modal events */
+    #modal-detail, #promote-subtitle, #swap-subtitle { font-family: 'Geist Mono', monospace; font-feature-settings: 'tnum'; }
+
+    /* Scrollbars */
+    *::-webkit-scrollbar { width: 8px; height: 8px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+    *::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* Hidden helper */
+    [hidden] { display: none !important; }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
   </style>
 </head>
 <body>
+  <header class="app-header" role="banner">
+    <div class="app-logo" id="app-logo">IS</div>
+    <div class="app-brand" id="app-brand">Il tuo Salone</div>
+    <div class="app-zenith">powered by<span>Zenith Studio</span></div>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Cambia tema">
+      <svg class="icon-sun"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </header>
+
   <div class="container" id="main-container">
 
     <header>
@@ -1201,6 +1660,300 @@
     // ─── Init ─────────────────────────────────────────────────────────────────
     setView('calendario');
     loadData();
+  </script>
+
+  <!-- ── Toast container ── -->
+  <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ── Config inputs (hidden, editabili via Ispeziona) ── -->
+  <div hidden id="cfg-block">
+    <input id="cfg-salon-name" value="Il tuo Salone">
+    <input id="cfg-salon-initials" value="IS">
+  </div>
+
+  <!-- ── Zenith restyle: PWA + interactions (additive only) ── -->
+  <script>
+  (function zenith() {
+    'use strict';
+
+    // ════ THEME TOGGLE ════════════════════════════════════════════════════
+    const themeBtn = document.getElementById('theme-toggle');
+    function applyTheme(t) {
+      document.documentElement.dataset.theme = t;
+      localStorage.setItem('theme', t);
+    }
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.dataset.theme;
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+      hapticTap();
+    });
+    // System theme change: only follow if user hasn't set manual pref
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) applyTheme(e.matches ? 'light' : 'dark');
+      });
+    }
+
+    // ════ CONFIG → HEADER ═════════════════════════════════════════════════
+    function syncHeaderFromConfig() {
+      const nameEl = document.getElementById('cfg-salon-name');
+      const initEl = document.getElementById('cfg-salon-initials');
+      if (nameEl && nameEl.value) document.getElementById('app-brand').textContent = nameEl.value;
+      if (initEl && initEl.value) document.getElementById('app-logo').textContent  = initEl.value;
+    }
+    syncHeaderFromConfig();
+
+    // ════ TOAST SYSTEM ════════════════════════════════════════════════════
+    const TOAST_CT = document.getElementById('toast-container');
+    const TOAST_MAX = 3;
+    function showToast(message, type) {
+      type = type || 'info';
+      const t = document.createElement('div');
+      t.className = 'toast toast-' + type;
+      const ico = document.createElement('div');
+      ico.className = 'toast-icon';
+      ico.textContent = type === 'success' ? '✓' : type === 'error' ? '✕' : 'i';
+      const txt = document.createElement('div');
+      txt.textContent = String(message);
+      t.appendChild(ico); t.appendChild(txt);
+      TOAST_CT.appendChild(t);
+      // cap
+      while (TOAST_CT.children.length > TOAST_MAX) TOAST_CT.firstChild.remove();
+      // auto dismiss
+      setTimeout(() => {
+        t.classList.add('toast-leaving');
+        t.addEventListener('animationend', () => t.remove(), { once: true });
+      }, 3000);
+    }
+    window.showToast = showToast;
+
+    // Override window.alert → toast(error). console.error trattenuto per debug.
+    const _nativeAlert = window.alert.bind(window);
+    window.alert = function(msg) {
+      try { showToast(msg, 'error'); }
+      catch (e) { _nativeAlert(msg); }
+    };
+
+    // ════ HAPTIC ══════════════════════════════════════════════════════════
+    function hapticTap(strong) {
+      if (navigator.vibrate) navigator.vibrate(strong ? 20 : 10);
+    }
+    window.hapticTap = hapticTap;
+    // Delegated tap haptic on key buttons
+    document.addEventListener('pointerdown', e => {
+      const t = e.target.closest('.btn, .lm-icon-btn, .toggle-btn, .tab-btn, .modal-close, .theme-toggle, .btn-lm-mobile');
+      if (t) hapticTap();
+    }, { passive: true });
+
+    // ════ MAGNETIC BUTTONS (desktop, hover-capable only) ══════════════════
+    function attachMagnetic(el) {
+      if (!el || el.dataset.magnetic === '1') return;
+      el.dataset.magnetic = '1';
+      el.classList.add('magnetic');
+      const STRENGTH = 0.35, MAX = 8, RADIUS = 60;
+      let raf = null;
+      function onMove(e) {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const dx = e.clientX - cx, dy = e.clientY - cy;
+        const dist = Math.hypot(dx, dy);
+        if (dist > Math.max(r.width, r.height) / 2 + RADIUS) {
+          el.style.transform = '';
+          return;
+        }
+        const tx = Math.max(-MAX, Math.min(MAX, dx * STRENGTH));
+        const ty = Math.max(-MAX, Math.min(MAX, dy * STRENGTH));
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => { el.style.transform = `translate(${tx}px, ${ty}px)`; });
+      }
+      function onLeave() { if (raf) cancelAnimationFrame(raf); el.style.transform = ''; }
+      window.addEventListener('mousemove', onMove);
+      el.addEventListener('mouseleave', onLeave);
+    }
+    function rebindMagnetics() {
+      if (!window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+      // Solo bottoni submit primari, 1 per schermata logica
+      ['btn-add'].forEach(id => { const el = document.getElementById(id); if (el) attachMagnetic(el); });
+      // Bottoni submit dentro modal (selettore stretto)
+      [
+        '#modal-promote .btn:not(.btn-ghost):not(.btn-danger)',
+        '#modal-add-lm  #tab-pane-nuovo > .btn',
+        '#modal-new-contact .btn:not(.btn-ghost):not(.btn-danger)'
+      ].forEach(sel => { document.querySelectorAll(sel).forEach(attachMagnetic); });
+    }
+    rebindMagnetics();
+
+    // ════ ANIMATED COUNTERS ═══════════════════════════════════════════════
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    function animateCounter(el, from, to, duration) {
+      duration = duration || 400;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min(1, (now - start) / duration);
+        el.textContent = String(Math.round(from + (to - from) * easeOutCubic(p)));
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    const COUNTER_IDS = ['lm-count', 'stat-today', 'stat-tomorrow', 'stat-sent', 'stat-retention'];
+    const _animatingCounters = new WeakSet();
+    COUNTER_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let prev = parseInt(el.textContent, 10) || 0;
+      const obs = new MutationObserver(() => {
+        if (_animatingCounters.has(el)) return; // skip recursive mutations from ourselves
+        const next = parseInt(el.textContent, 10);
+        if (isNaN(next) || next === prev) { prev = isNaN(next) ? prev : next; return; }
+        _animatingCounters.add(el);
+        const from = prev;
+        prev = next;
+        // restore to old value visually, animate to new
+        el.textContent = String(from);
+        animateCounter(el, from, next, 500);
+        // release lock after animation
+        setTimeout(() => _animatingCounters.delete(el), 600);
+      });
+      obs.observe(el, { childList: true, characterData: true, subtree: true });
+    });
+
+    // ════ LONG-PRESS HELPER ═══════════════════════════════════════════════
+    function attachLongPress(el, callback, duration) {
+      duration = duration || 600;
+      let timer = null, moved = false, startX = 0, startY = 0;
+      function clear() {
+        if (timer) { clearTimeout(timer); timer = null; }
+        el.classList.remove('longpress-active');
+      }
+      el.addEventListener('touchstart', e => {
+        if (e.touches.length !== 1) return;
+        startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        moved = false;
+        el.classList.add('longpress-active');
+        timer = setTimeout(() => {
+          if (!moved) {
+            hapticTap(true);
+            callback(e);
+          }
+          clear();
+        }, duration);
+      }, { passive: true });
+      el.addEventListener('touchmove', e => {
+        if (!timer) return;
+        const t = e.touches[0];
+        if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) { moved = true; clear(); }
+      }, { passive: true });
+      el.addEventListener('touchend',    clear, { passive: true });
+      el.addEventListener('touchcancel', clear, { passive: true });
+    }
+    window.attachLongPress = attachLongPress;
+
+    // ════ FC EVENT LONG-PRESS / DBLCLICK → startEdit ══════════════════════
+    // Note: classic <script> top-level `let` vars (_modalAppt, lastMinuteList) and
+    // `function` declarations (openEventModal, startEdit, ...) live in the shared
+    // global lexical environment, so this IIFE can read/call them directly.
+    // We intentionally do NOT wrap openEventModal: function-decl bindings can't be
+    // overridden via window.X. A brief modal flash on dblclick/longpress is acceptable.
+
+    // dblclick desktop su .fc-event
+    document.addEventListener('dblclick', e => {
+      const evEl = e.target.closest('.fc-event');
+      if (evEl) {
+        e.preventDefault();
+        if (typeof _modalAppt !== 'undefined' && _modalAppt) {
+          const a = _modalAppt;
+          closeEventModal();
+          startEdit(a);
+        }
+        return;
+      }
+      const card = e.target.closest('.lm-card');
+      if (card && !e.target.closest('.lm-icon-btn')) {
+        const parent = card.parentElement;
+        const idx = Array.from(parent.querySelectorAll('.lm-card')).indexOf(card);
+        if (typeof lastMinuteList !== 'undefined' && lastMinuteList[idx]) {
+          openPromoteModal(lastMinuteList[idx]);
+        }
+      }
+    });
+
+    // Touch long-press: aggancio dopo ogni render
+    function bindLongPressOnFCEvents() {
+      document.querySelectorAll('.fc-event:not([data-lp-bound])').forEach(evEl => {
+        evEl.dataset.lpBound = '1';
+        attachLongPress(evEl, () => {
+          // Trigger native click to let FullCalendar set _modalAppt via openEventModal
+          evEl.click();
+          setTimeout(() => {
+            if (typeof _modalAppt !== 'undefined' && _modalAppt) {
+              const a = _modalAppt;
+              closeEventModal();
+              startEdit(a);
+            }
+          }, 60);
+        }, 600);
+      });
+    }
+    function bindLongPressOnLmCards() {
+      document.querySelectorAll('.lm-card:not([data-lp-bound])').forEach(card => {
+        card.dataset.lpBound = '1';
+        attachLongPress(card, () => {
+          if (!card.parentElement) return;
+          const idx = Array.from(card.parentElement.querySelectorAll('.lm-card')).indexOf(card);
+          if (typeof lastMinuteList !== 'undefined' && lastMinuteList[idx]) {
+            openPromoteModal(lastMinuteList[idx]);
+          }
+        }, 600);
+        // Tap visual feedback (gradient border)
+        card.addEventListener('touchstart', () => {
+          card.classList.add('tap-active');
+          clearTimeout(card._tapTimer);
+          card._tapTimer = setTimeout(() => card.classList.remove('tap-active'), 800);
+        }, { passive: true });
+      });
+    }
+
+    // Hook into render() with MutationObserver on lm lists + calendar
+    const lmObs = new MutationObserver(() => { bindLongPressOnLmCards(); });
+    const calObs = new MutationObserver(() => { bindLongPressOnFCEvents(); });
+    [document.getElementById('lm-list-desktop'), document.getElementById('lm-list-mobile')].forEach(el => {
+      if (el) lmObs.observe(el, { childList: true, subtree: false });
+    });
+    const calEl = document.getElementById('calendar');
+    if (calEl) calObs.observe(calEl, { childList: true, subtree: true });
+
+    // ════ SKELETON LOADING (init only) ════════════════════════════════════
+    function skeletonCardHTML() {
+      return '<div class="skeleton-card">' +
+        '<div class="skeleton skeleton-line s-name"></div>' +
+        '<div class="skeleton skeleton-line s-tel"></div>' +
+        '<div class="skeleton skeleton-line s-row"></div></div>';
+    }
+    function injectSkeletons() {
+      // Only replace default empty placeholders — do NOT overwrite if render() already populated
+      ['lm-list-desktop', 'lm-list-mobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.querySelector('.lm-empty')) el.innerHTML = skeletonCardHTML().repeat(3);
+      });
+      const apptList = document.getElementById('appt-list');
+      if (apptList && apptList.querySelector('.empty')) {
+        apptList.innerHTML = ('<div class="skeleton-card">' +
+          '<div class="skeleton skeleton-line s-name"></div>' +
+          '<div class="skeleton skeleton-line s-tel"></div></div>').repeat(4);
+      }
+    }
+    injectSkeletons();
+
+    // ════ PWA: service worker ═════════════════════════════════════════════
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch(err => {
+          console.warn('[SW] registration failed', err);
+        });
+      });
+    }
+  })();
   </script>
 </body>
 </html>
