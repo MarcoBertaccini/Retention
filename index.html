@@ -1081,7 +1081,7 @@
       document.getElementById('main-container').classList.toggle('wide',  isCal);
       if (isCal) {
         if (!calendar) initCalendar();
-        else setTimeout(() => calendar.updateSize(), 50);
+        else document.getElementById('main-container').addEventListener('transitionend', () => calendar.updateSize(), { once: true });
       }
     }
 
