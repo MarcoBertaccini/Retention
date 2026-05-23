@@ -606,7 +606,13 @@
 
     /* ── Mobile optimization ── */
     @media (max-width: 768px) {
+      html, body { overflow-x: hidden; max-width: 100%; }
       body { font-size: 15px; padding: 1rem 0.75rem 3rem; padding-top: 72px; }
+      .container, .container.wide { width: 100%; box-sizing: border-box; }
+      /* Collapse all grid layouts to single column — overrides the desktop 280px 1fr rule */
+      .grid, .container.wide .grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .lm-sidebar { min-width: 0; width: 100%; }
       .card { padding: var(--space-4); border-radius: var(--radius-md); }
       .stat { padding: var(--space-3); }
       .stat-val { font-size: var(--text-xl); }
