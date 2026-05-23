@@ -1040,11 +1040,13 @@
 
     function initCalendar() {
       const el = document.getElementById('calendar');
-      const isMobile = window.innerWidth < 600;
+      const isMobile = window.innerWidth < 768;
+      const toolbarDesktop = { left: 'prev,next today', center: 'title', right: 'timeGridDay,timeGridWeek,dayGridMonth' };
+      const toolbarMobile  = { left: 'prev,next today', center: 'title', right: '' };
       calendar = new FullCalendar.Calendar(el, {
         locale: 'it',
-        initialView: isMobile ? 'timeGridDay' : 'timeGridWeek',
-        headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridDay,timeGridWeek,dayGridMonth' },
+        initialView: isMobile ? 'listWeek' : 'timeGridWeek',
+        headerToolbar: isMobile ? toolbarMobile : toolbarDesktop,
         firstDay: 1,
         slotMinTime: '08:00:00',
         slotMaxTime: '20:00:00',
@@ -1069,6 +1071,26 @@
         }
       });
       calendar.render();
+
+      // Responsive: switch between listWeek (mobile) and timeGridWeek (desktop) at 768px
+      let _resizeTimer;
+      let _calMobile = isMobile;
+      window.addEventListener('resize', () => {
+        clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(() => {
+          const nowMobile = window.innerWidth < 768;
+          if (nowMobile === _calMobile) return;
+          _calMobile = nowMobile;
+          if (nowMobile) {
+            calendar.changeView('listWeek');
+            calendar.setOption('headerToolbar', toolbarMobile);
+          } else {
+            calendar.changeView('timeGridWeek');
+            calendar.setOption('headerToolbar', toolbarDesktop);
+          }
+          calendar.updateSize();
+        }, 200);
+      });
     }
 
     // ─── View toggle ──────────────────────────────────────────────────────────
