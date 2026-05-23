@@ -648,6 +648,20 @@
       100% { transform: scale(1);    box-shadow: 0 0 0 var(--accent-glow); }
     }
 
+    /* ── Servizio pills ── */
+    .servizio-pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: 4px; }
+    .pill {
+      font-family: inherit; font-size: 12px; font-weight: 500;
+      padding: 5px 12px; border: 1px solid var(--border);
+      border-radius: 99px; background: transparent;
+      color: var(--text-secondary); cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      touch-action: manipulation;
+    }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .modal-servizio { font-size: 13px; font-weight: 500; color: var(--accent); margin-bottom: 6px; }
+
     /* ── Misc fixes ── */
     .form-row label { color: var(--text-secondary); font-size: var(--text-xs); letter-spacing: 0.02em; text-transform: uppercase; }
     ::placeholder { color: var(--text-muted); }
@@ -805,6 +819,18 @@
         </div>
         <div id="form-conflict-warn" class="msg-warn" style="display:none"></div>
         <div class="form-row">
+          <label>Servizio</label>
+          <div class="servizio-pills" id="servizio-pills">
+            <button type="button" class="pill" onclick="selectServizio('Lavaggio+Taglio')">Lavaggio+Taglio</button>
+            <button type="button" class="pill" onclick="selectServizio('Lavaggio+Taglio+Barba')">Lavaggio+Taglio+Barba</button>
+            <button type="button" class="pill" onclick="selectServizio('Personalizzato')">Personalizzato</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Durata (min)</label>
+          <input type="number" id="inp-durata" min="5" step="5" placeholder="es. 45" oninput="checkFormConflict()" />
+        </div>
+        <div class="form-row">
           <label>Note (opzionale)</label>
           <textarea id="inp-note" placeholder="Informazioni aggiuntive..." maxlength="500" rows="3"></textarea>
         </div>
@@ -866,6 +892,7 @@
       <div id="modal-name"   class="modal-name"></div>
       <div id="modal-detail" class="modal-detail"></div>
       <div id="modal-status" class="modal-status"></div>
+      <div id="modal-servizio" class="modal-servizio" style="display:none"></div>
       <div id="modal-notes"  class="modal-notes" style="display:none"></div>
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="startEdit(_modalAppt)">✏️ Modifica</button>
@@ -927,6 +954,15 @@
       <div class="modal-detail" id="promote-subtitle" style="margin-bottom:1rem"></div>
       <div class="form-row"><label>Data *</label><input type="date" id="promote-data" oninput="checkPromoteConflict()" /></div>
       <div class="form-row"><label>Ora *</label><input type="time" id="promote-ora" oninput="checkPromoteConflict()" /></div>
+      <div class="form-row">
+        <label>Servizio</label>
+        <div class="servizio-pills" id="promote-servizio-pills">
+          <button type="button" class="pill" onclick="selectServizioPromote('Lavaggio+Taglio')">Lavaggio+Taglio</button>
+          <button type="button" class="pill" onclick="selectServizioPromote('Lavaggio+Taglio+Barba')">Lavaggio+Taglio+Barba</button>
+          <button type="button" class="pill" onclick="selectServizioPromote('Personalizzato')">Personalizzato</button>
+        </div>
+      </div>
+      <div class="form-row"><label>Durata (min)</label><input type="number" id="promote-durata" min="5" step="5" placeholder="es. 45" oninput="checkPromoteConflict()" /></div>
       <div id="promote-conflict-warn" class="msg-warn" style="display:none"></div>
       <button class="btn" style="margin-top:12px" onclick="submitPromote()">Conferma appuntamento</button>
       <div id="promote-err" class="msg msg-err">✗ Errore, riprova.</div>
@@ -948,6 +984,12 @@
     // ─── Costanti ─────────────────────────────────────────────────────────────
     const DURATA_DEFAULT_MIN = 30;
 
+    const SERVIZI = {
+      'Lavaggio+Taglio':       { durata: 45, colore: '#60A5FA' },
+      'Lavaggio+Taglio+Barba': { durata: 60, colore: '#4ADE80' },
+      'Personalizzato':        { durata: null, colore: '#FBBF24' }
+    };
+
     const WEBHOOK_POST         = 'https://n8n.zenith-studio.it/webhook/1e27f028-1ec0-471a-9df5-2b51d9df152c';
     const WEBHOOK_GET          = 'https://n8n.zenith-studio.it/webhook/8a80e4be-9dc3-44d5-836b-c063dbefbbbe';
     const WEBHOOK_DEL          = 'https://n8n.zenith-studio.it/webhook/d4ca3d3c-1b78-401e-b827-21823f8df7e2';
@@ -966,8 +1008,10 @@
     let _modalAppt     = null;
     let _promoteAppt   = null;
     let _swapApptA     = null;
-    var _editingRowNumber   = null;
-    var _promotingRowNumber = null;
+    var _editingRowNumber        = null;
+    var _promotingRowNumber      = null;
+    var _selectedServizio        = null;
+    var _selectedServizioPromote = null;
 
     // ─── Header date ──────────────────────────────────────────────────────────
     const now = new Date();
@@ -1011,28 +1055,38 @@
       });
     }
 
-    function checkSlotConflict(data, ora, excludeRowNumber) {
+    function checkSlotConflict(data, ora, excludeRowNumber, durataMin) {
       if (!data || !ora) return null;
-      return appts.find(a =>
-        a.data === data && a.ora === ora &&
-        (excludeRowNumber === null || a.row_number !== excludeRowNumber)
-      ) || null;
+      const [hA, mA] = ora.split(':').map(Number);
+      const startA = hA * 60 + mA;
+      const durA   = (durataMin > 0) ? durataMin : DURATA_DEFAULT_MIN;
+      const endA   = startA + durA;
+      return appts.find(a => {
+        if (a.data !== data) return false;
+        if (excludeRowNumber !== null && a.row_number === excludeRowNumber) return false;
+        const [hB, mB] = (a.ora || '00:00').split(':').map(Number);
+        const startB = hB * 60 + mB;
+        const durB   = (a.durata > 0) ? a.durata : DURATA_DEFAULT_MIN;
+        const endB   = startB + durB;
+        return startA < endB && endA > startB;
+      }) || null;
     }
 
     // ─── FullCalendar ─────────────────────────────────────────────────────────
     function toFCEvents(list) {
       return list.map(a => {
-        const ora = a.ora || '09:00';
+        const ora    = a.ora || '09:00';
         const [hh, mm] = ora.split(':').map(Number);
-        const totalMin = hh * 60 + mm + DURATA_DEFAULT_MIN;
-        const endStr = `${a.data}T${pad(Math.floor(totalMin / 60) % 24)}:${pad(totalMin % 60)}`;
-        const color = a.retention ? '#854f0b' : a.reminder ? '#3b6d11' : '#185fa5';
+        const durMin = (a.durata > 0) ? a.durata : DURATA_DEFAULT_MIN;
+        const endTot = hh * 60 + mm + durMin;
+        const endStr = `${a.data}T${pad(Math.floor(endTot / 60) % 24)}:${pad(endTot % 60)}`;
+        const color  = (a.servizio && SERVIZI[a.servizio]) ? SERVIZI[a.servizio].colore : '#7B6FA8';
         return {
-          title: a.nome + (a.cognome ? ' ' + a.cognome : ''),
+          title: (a.nome + (a.cognome ? ' ' + a.cognome : '')) + ' · ' + durMin + 'min',
           start: `${a.data}T${ora}`,
-          end: endStr,
+          end:   endStr,
           backgroundColor: color,
-          borderColor: color,
+          borderColor:     color,
           extendedProps: { appt: a }
         };
       });
@@ -1124,6 +1178,14 @@
       if (appt.reminder)  statusParts.push('✓ Reminder inviato');
       if (appt.retention) statusParts.push('✓ Retention inviato');
       document.getElementById('modal-status').textContent = statusParts.join('  ');
+      const servizioEl = document.getElementById('modal-servizio');
+      if (appt.servizio) {
+        const dur = (appt.durata > 0) ? appt.durata : DURATA_DEFAULT_MIN;
+        servizioEl.textContent = appt.servizio + ' · ' + dur + 'min';
+        servizioEl.style.display = '';
+      } else {
+        servizioEl.style.display = 'none';
+      }
       const notesEl = document.getElementById('modal-notes');
       if (appt.note) { notesEl.textContent = appt.note; notesEl.style.display = ''; }
       else notesEl.style.display = 'none';
@@ -1144,6 +1206,13 @@
       document.getElementById('inp-data').value    = appt.data;
       document.getElementById('inp-ora').value     = appt.ora;
       document.getElementById('inp-note').value    = appt.note || '';
+      if (appt.servizio && SERVIZI[appt.servizio]) {
+        selectServizio(appt.servizio);
+      } else {
+        _selectedServizio = null;
+        document.querySelectorAll('#servizio-pills .pill').forEach(b => b.classList.remove('active'));
+      }
+      document.getElementById('inp-durata').value = (appt.durata > 0) ? appt.durata : '';
       _editingRowNumber   = appt.row_number;
       _promotingRowNumber = null;
       document.getElementById('form-title-text').textContent = '✦ Modifica appuntamento';
@@ -1156,8 +1225,10 @@
     function resetFormMode() {
       _editingRowNumber   = null;
       _promotingRowNumber = null;
-      ['inp-nome','inp-cognome','inp-tel','inp-data','inp-ora','inp-note']
+      _selectedServizio   = null;
+      ['inp-nome','inp-cognome','inp-tel','inp-data','inp-ora','inp-note','inp-durata']
         .forEach(id => document.getElementById(id).value = '');
+      document.querySelectorAll('#servizio-pills .pill').forEach(b => b.classList.remove('active'));
       document.getElementById('form-conflict-warn').style.display = 'none';
       document.getElementById('btn-add').disabled    = false;
       document.getElementById('btn-add').textContent = 'Aggiungi appuntamento';
@@ -1167,6 +1238,38 @@
     }
 
     function cancelEdit() { resetFormMode(); }
+
+    function selectServizio(nome) {
+      _selectedServizio = nome;
+      document.querySelectorAll('#servizio-pills .pill').forEach(b =>
+        b.classList.toggle('active', b.textContent.trim() === nome)
+      );
+      const s = SERVIZI[nome];
+      const durEl = document.getElementById('inp-durata');
+      if (s && s.durata !== null) {
+        durEl.value = s.durata;
+      } else {
+        durEl.value = '';
+        durEl.focus();
+      }
+      checkFormConflict();
+    }
+
+    function selectServizioPromote(nome) {
+      _selectedServizioPromote = nome;
+      document.querySelectorAll('#promote-servizio-pills .pill').forEach(b =>
+        b.classList.toggle('active', b.textContent.trim() === nome)
+      );
+      const s = SERVIZI[nome];
+      const durEl = document.getElementById('promote-durata');
+      if (s && s.durata !== null) {
+        durEl.value = s.durata;
+      } else {
+        durEl.value = '';
+        durEl.focus();
+      }
+      checkPromoteConflict();
+    }
 
     async function modalDelete() {
       if (!_modalAppt) return;
@@ -1188,12 +1291,16 @@
 
     // ─── Conflict check (form principale) ─────────────────────────────────────
     function checkFormConflict() {
-      const data = document.getElementById('inp-data').value;
-      const ora  = document.getElementById('inp-ora').value;
-      const el   = document.getElementById('form-conflict-warn');
-      const conflict = checkSlotConflict(data, ora, _editingRowNumber);
+      const data   = document.getElementById('inp-data').value;
+      const ora    = document.getElementById('inp-ora').value;
+      const durata = parseInt(document.getElementById('inp-durata').value) || DURATA_DEFAULT_MIN;
+      const el     = document.getElementById('form-conflict-warn');
+      const conflict = checkSlotConflict(data, ora, _editingRowNumber, durata);
       if (conflict) {
-        el.textContent = `⚠️ Slot già occupato da ${conflict.nome}${conflict.cognome ? ' ' + conflict.cognome : ''}`;
+        const [hB, mB] = (conflict.ora || '00:00').split(':').map(Number);
+        const endMin = hB * 60 + mB + ((conflict.durata > 0) ? conflict.durata : DURATA_DEFAULT_MIN);
+        const endStr = `${pad(Math.floor(endMin / 60) % 24)}:${pad(endMin % 60)}`;
+        el.textContent = `⚠️ Si sovrappone a ${conflict.nome}${conflict.cognome ? ' ' + conflict.cognome : ''} (${conflict.ora}–${endStr})`;
         el.style.display = '';
       } else {
         el.style.display = 'none';
@@ -1263,6 +1370,8 @@
           retention:  (r['Retention'] || '').toString().toLowerCase() === 'mandato',
           note:       (r['Note'] || '').trim(),
           stato:      (r['Stato'] || 'Confermato').trim(),
+          servizio:   (r['Servizio'] || '').trim() || null,
+          durata:     (parseInt(r['Durata']) > 0) ? parseInt(r['Durata']) : DURATA_DEFAULT_MIN,
           row_number: r['row_number']
         })).filter(a => a.nome);
 
@@ -1356,6 +1465,11 @@
       const data    = document.getElementById('inp-data').value;
       const ora     = document.getElementById('inp-ora').value;
       const note    = document.getElementById('inp-note').value.trim();
+      const servizio = _selectedServizio;
+      const durataRaw = parseInt(document.getElementById('inp-durata').value);
+      const durata    = (durataRaw > 0) ? durataRaw
+                      : (servizio && SERVIZI[servizio] && SERVIZI[servizio].durata)
+                        ? SERVIZI[servizio].durata : DURATA_DEFAULT_MIN;
 
       const promotingRow = _promotingRowNumber;
       const editingRow   = _editingRowNumber;
@@ -1368,6 +1482,10 @@
       }
       if (!data) { showFieldError('inp-data', 'Campo obbligatorio'); valid = false; }
       if (!ora)  { showFieldError('inp-ora',  'Campo obbligatorio'); valid = false; }
+      if (servizio === 'Personalizzato' && !(durataRaw > 0)) {
+        alert('Inserisci una durata valida per il servizio personalizzato.');
+        return;
+      }
       if (!valid) return;
 
       const btn = document.getElementById('btn-add');
@@ -1379,17 +1497,17 @@
         if (promotingRow !== null) {
           res = await fetch(WEBHOOK_PROMOTE, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ row_number: promotingRow, 'Data appuntamento': data, 'Orario': ora })
+            body: JSON.stringify({ row_number: promotingRow, 'Data appuntamento': data, 'Orario': ora, 'Servizio': servizio || '', 'Durata': durata })
           });
         } else if (editingRow !== null) {
           res = await fetch(WEBHOOK_UPDATE, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ row_number: editingRow, 'Nome': nome, 'Cognome': cognome, 'Numero di telefono': tel, 'Data appuntamento': data, 'Orario': ora, 'Note': note })
+            body: JSON.stringify({ row_number: editingRow, 'Nome': nome, 'Cognome': cognome, 'Numero di telefono': tel, 'Data appuntamento': data, 'Orario': ora, 'Note': note, 'Servizio': servizio || '', 'Durata': durata })
           });
         } else {
           res = await fetch(WEBHOOK_POST, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, cognome, telefono: tel, data, ora, note })
+            body: JSON.stringify({ nome, cognome, telefono: tel, data, ora, note, 'Servizio': servizio || '', 'Durata': durata })
           });
         }
         if (!res.ok) throw new Error();
@@ -1631,10 +1749,13 @@
       const nome = appt.nome + (appt.cognome ? ' ' + appt.cognome : '');
       document.getElementById('promote-title').textContent    = '↗ Assegna a slot';
       document.getElementById('promote-subtitle').textContent = nome + (appt.tel ? ' · ' + appt.tel : '');
-      document.getElementById('promote-data').value = '';
-      document.getElementById('promote-ora').value  = '';
-      document.getElementById('promote-data').min   = new Date().toISOString().slice(0, 10);
+      document.getElementById('promote-data').value  = '';
+      document.getElementById('promote-ora').value   = '';
+      document.getElementById('promote-durata').value = '';
+      document.getElementById('promote-data').min    = new Date().toISOString().slice(0, 10);
       document.getElementById('promote-conflict-warn').style.display = 'none';
+      _selectedServizioPromote = null;
+      document.querySelectorAll('#promote-servizio-pills .pill').forEach(b => b.classList.remove('active'));
       document.getElementById('promote-err').style.display = 'none';
       document.getElementById('modal-promote').style.display = 'flex';
     }
@@ -1644,12 +1765,16 @@
     }
 
     function checkPromoteConflict() {
-      const data = document.getElementById('promote-data').value;
-      const ora  = document.getElementById('promote-ora').value;
-      const el   = document.getElementById('promote-conflict-warn');
-      const conflict = checkSlotConflict(data, ora, null);
+      const data   = document.getElementById('promote-data').value;
+      const ora    = document.getElementById('promote-ora').value;
+      const durata = parseInt(document.getElementById('promote-durata').value) || DURATA_DEFAULT_MIN;
+      const el     = document.getElementById('promote-conflict-warn');
+      const conflict = checkSlotConflict(data, ora, null, durata);
       if (conflict) {
-        el.textContent = `⚠️ Slot già occupato da ${conflict.nome}${conflict.cognome ? ' ' + conflict.cognome : ''}`;
+        const [hB, mB] = (conflict.ora || '00:00').split(':').map(Number);
+        const endMin = hB * 60 + mB + ((conflict.durata > 0) ? conflict.durata : DURATA_DEFAULT_MIN);
+        const endStr = `${pad(Math.floor(endMin / 60) % 24)}:${pad(endMin % 60)}`;
+        el.textContent = `⚠️ Si sovrappone a ${conflict.nome}${conflict.cognome ? ' ' + conflict.cognome : ''} (${conflict.ora}–${endStr})`;
         el.style.display = '';
       } else {
         el.style.display = 'none';
@@ -1658,14 +1783,23 @@
 
     async function submitPromote() {
       if (!_promoteAppt) return;
-      const data = document.getElementById('promote-data').value;
-      const ora  = document.getElementById('promote-ora').value;
+      const data     = document.getElementById('promote-data').value;
+      const ora      = document.getElementById('promote-ora').value;
+      const servizio = _selectedServizioPromote;
+      const durataRaw = parseInt(document.getElementById('promote-durata').value);
+      const durata    = (durataRaw > 0) ? durataRaw
+                      : (servizio && SERVIZI[servizio] && SERVIZI[servizio].durata)
+                        ? SERVIZI[servizio].durata : DURATA_DEFAULT_MIN;
       if (!data || !ora) { alert('Seleziona data e orario.'); return; }
+      if (servizio === 'Personalizzato' && !(durataRaw > 0)) {
+        alert('Inserisci una durata valida per il servizio personalizzato.');
+        return;
+      }
       document.getElementById('promote-err').style.display = 'none';
       try {
         const res = await fetch(WEBHOOK_PROMOTE, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ row_number: _promoteAppt.row_number, 'Data appuntamento': data, 'Orario': ora })
+          body: JSON.stringify({ row_number: _promoteAppt.row_number, 'Data appuntamento': data, 'Orario': ora, 'Servizio': servizio || '', 'Durata': durata })
         });
         if (!res.ok) throw new Error();
         closePromoteModal();
