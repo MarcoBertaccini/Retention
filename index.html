@@ -592,8 +592,6 @@
     .fc .fc-col-header-cell, .fc .fc-timegrid-axis { background: var(--bg-secondary); }
     .fc .fc-timegrid-slot-label { color: var(--text-muted); font-size: 11px; }
     .fc .fc-event {
-      background: var(--accent) !important;
-      border-color: var(--accent-hover) !important;
       border-radius: var(--radius-sm) !important;
       box-shadow: 0 1px 3px rgba(0,0,0,0.15);
       padding: 1px 4px;
@@ -1077,7 +1075,7 @@
       return list.map(a => {
         const ora    = a.ora || '09:00';
         const [hh, mm] = ora.split(':').map(Number);
-        const durMin = (a.durata > 0) ? a.durata : DURATA_DEFAULT_MIN;
+        const durMin = (parseInt(a.durata, 10) > 0) ? parseInt(a.durata, 10) : DURATA_DEFAULT_MIN;
         const endTot = hh * 60 + mm + durMin;
         const endStr = `${a.data}T${pad(Math.floor(endTot / 60) % 24)}:${pad(endTot % 60)}`;
         const color  = (a.servizio && SERVIZI[a.servizio]) ? SERVIZI[a.servizio].colore : '#7B6FA8';
