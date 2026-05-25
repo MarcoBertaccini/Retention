@@ -602,6 +602,51 @@
     .fc-day-other { background: color-mix(in srgb, var(--bg-primary) 50%, transparent); }
     .fc a { color: var(--text-primary); }
 
+    /* ── PIN lock overlay ── */
+    #pin-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg-primary);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pin-box {
+      display: flex; flex-direction: column; align-items: center;
+      gap: var(--space-6); width: 100%; max-width: 300px; padding: var(--space-8);
+    }
+    .pin-app-name { font-size: var(--text-xl); font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+    .pin-msg { font-size: var(--text-sm); color: var(--text-secondary); text-align: center; min-height: 1.5em; margin: 0; }
+    .pin-dots { display: flex; gap: 16px; }
+    .pin-dots span {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid var(--border-strong); background: transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pin-dots span.filled { background: var(--accent); border-color: var(--accent); }
+    .pin-dots span.error  { background: #ef4444; border-color: #ef4444; }
+    @keyframes pin-shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-8px); }
+      40%     { transform: translateX(8px); }
+      60%     { transform: translateX(-5px); }
+      80%     { transform: translateX(5px); }
+    }
+    .pin-dots.shake { animation: pin-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both; }
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
+    .pin-key {
+      font-family: inherit; font-size: 22px; font-weight: 400;
+      min-height: 64px; border-radius: var(--radius-md);
+      border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-primary);
+      cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s, transform 0.08s;
+    }
+    .pin-key:active:not(:disabled) { background: var(--accent); color: #fff; transform: scale(0.93); }
+    .pin-key-action { font-size: 20px; color: var(--text-secondary); }
+    .pin-btn {
+      font-size: 16px; padding: 6px 8px; border: none; background: none;
+      color: var(--text-muted); cursor: pointer; border-radius: var(--radius-sm);
+      transition: color 0.15s; margin-left: var(--space-2);
+    }
+    .pin-btn:hover { color: var(--accent); }
+
     /* ── Mobile optimization ── */
     @media (max-width: 768px) {
       html, body { overflow-x: hidden; max-width: 100%; }
@@ -752,6 +797,30 @@
   </style>
 </head>
 <body>
+  <!-- ── PIN lock screen — visual barrier only, not cryptographic security ── -->
+  <div id="pin-overlay" style="display:flex">
+    <div class="pin-box">
+      <div class="pin-app-name">Il tuo Salone</div>
+      <p id="pin-msg" class="pin-msg">Inserisci il PIN</p>
+      <div id="pin-dots" class="pin-dots">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="pin-pad">
+        <button class="pin-key" onclick="pinKey(1)">1</button>
+        <button class="pin-key" onclick="pinKey(2)">2</button>
+        <button class="pin-key" onclick="pinKey(3)">3</button>
+        <button class="pin-key" onclick="pinKey(4)">4</button>
+        <button class="pin-key" onclick="pinKey(5)">5</button>
+        <button class="pin-key" onclick="pinKey(6)">6</button>
+        <button class="pin-key" onclick="pinKey(7)">7</button>
+        <button class="pin-key" onclick="pinKey(8)">8</button>
+        <button class="pin-key" onclick="pinKey(9)">9</button>
+        <button class="pin-key pin-key-action" onclick="pinBack()">⌫</button>
+        <button class="pin-key" onclick="pinKey(0)">0</button>
+        <button class="pin-key" disabled style="opacity:0;pointer-events:none"></button>
+      </div>
+    </div>
+  </div>
   <header class="app-header" role="banner">
     <div class="app-logo" id="app-logo">IS</div>
     <div class="app-brand" id="app-brand">Il tuo Salone</div>
@@ -760,6 +829,7 @@
       <svg class="icon-sun"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
+    <button class="pin-btn" id="pin-btn" onclick="openChangePinFlow()" type="button" aria-label="Cambia PIN" title="Cambia PIN">🔒</button>
   </header>
 
   <div class="container" id="main-container">
@@ -1881,6 +1951,152 @@
         alert('Errore durante lo scambio. Riprova.');
       }
     }
+
+    // ─── PIN Lock ─────────────────────────────────────────────────────────────
+    // Barriera visiva contro curiosità occasionali. Il PIN è hashato (SHA-256)
+    // in localStorage: evita la lettura diretta in DevTools, ma 10^4 possibili
+    // valori non offrono sicurezza crittografica — NON è autenticazione reale.
+    // Per resettare il PIN dimenticato: DevTools → Application → localStorage
+    // → elimina la chiave "app_pin" → al prossimo avvio verrà richiesto il setup.
+    const _PIN_STORAGE = 'app_pin';
+    const _PIN_SESSION = 'pin_unlocked';
+    const _PIN_LENGTH  = 4;
+    const _PIN_MSGS = {
+      'verify':         'Inserisci il PIN',
+      'setup-enter':    'Imposta un PIN (' + _PIN_LENGTH + ' cifre)',
+      'setup-confirm':  'Conferma il PIN',
+      'change-old':     'PIN attuale',
+      'change-new':     'Nuovo PIN (' + _PIN_LENGTH + ' cifre)',
+      'change-confirm': 'Conferma il nuovo PIN'
+    };
+    var _pinBuf  = '';
+    var _pinMode = '';
+    var _pinTemp = '';
+    var _pinBusy = false;
+
+    async function _pinHash(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function _pinSetMode(mode) {
+      _pinMode = mode; _pinBuf = '';
+      _pinDots();
+      document.getElementById('pin-msg').textContent = _PIN_MSGS[mode] || '';
+    }
+
+    function _pinDots() {
+      document.querySelectorAll('#pin-dots span').forEach((s, i) => {
+        s.classList.toggle('filled', i < _pinBuf.length);
+        s.classList.remove('error');
+      });
+    }
+
+    function _pinError(msg) {
+      const el = document.getElementById('pin-dots');
+      el.querySelectorAll('span').forEach(s => { s.classList.remove('filled'); s.classList.add('error'); });
+      el.classList.remove('shake');
+      void el.offsetWidth; // force reflow to restart animation
+      el.classList.add('shake');
+      document.getElementById('pin-msg').textContent = msg;
+      setTimeout(() => {
+        _pinBusy = false; _pinBuf = '';
+        _pinDots();
+        el.classList.remove('shake');
+        document.getElementById('pin-msg').textContent = _PIN_MSGS[_pinMode] || '';
+      }, 700);
+    }
+
+    function pinKey(d) {
+      if (_pinBusy || _pinBuf.length >= _PIN_LENGTH) return;
+      _pinBuf += String(d);
+      _pinDots();
+      if (_pinBuf.length === _PIN_LENGTH) _pinSubmit();
+    }
+
+    function pinBack() {
+      if (_pinBusy) return;
+      _pinBuf = _pinBuf.slice(0, -1);
+      _pinDots();
+    }
+
+    async function _pinSubmit() {
+      if (_pinBusy) return;
+      _pinBusy = true;
+      const input = _pinBuf;
+      try {
+        if (_pinMode === 'verify') {
+          if (await _pinHash(input) === localStorage.getItem(_PIN_STORAGE)) {
+            sessionStorage.setItem(_PIN_SESSION, '1');
+            document.getElementById('pin-overlay').style.display = 'none';
+          } else {
+            _pinError('PIN errato');
+          }
+
+        } else if (_pinMode === 'setup-enter') {
+          _pinTemp = input; _pinBusy = false;
+          _pinSetMode('setup-confirm');
+
+        } else if (_pinMode === 'setup-confirm') {
+          if (input === _pinTemp) {
+            localStorage.setItem(_PIN_STORAGE, await _pinHash(input));
+            sessionStorage.setItem(_PIN_SESSION, '1');
+            _pinTemp = '';
+            document.getElementById('pin-overlay').style.display = 'none';
+          } else {
+            _pinTemp = ''; _pinMode = 'setup-enter';
+            _pinError('I PIN non coincidono — riprova');
+          }
+
+        } else if (_pinMode === 'change-old') {
+          if (await _pinHash(input) === localStorage.getItem(_PIN_STORAGE)) {
+            _pinBusy = false; _pinSetMode('change-new');
+          } else {
+            _pinError('PIN errato');
+          }
+
+        } else if (_pinMode === 'change-new') {
+          _pinTemp = input; _pinBusy = false;
+          _pinSetMode('change-confirm');
+
+        } else if (_pinMode === 'change-confirm') {
+          if (input === _pinTemp) {
+            localStorage.setItem(_PIN_STORAGE, await _pinHash(input));
+            _pinTemp = '';
+            document.getElementById('pin-overlay').style.display = 'none';
+            alert('PIN aggiornato.');
+          } else {
+            _pinTemp = ''; _pinMode = 'change-new';
+            _pinError('I PIN non coincidono — riprova');
+          }
+        }
+      } catch(e) {
+        _pinBusy = false; _pinBuf = ''; _pinDots();
+      }
+    }
+
+    function openChangePinFlow() {
+      _pinTemp = '';
+      _pinSetMode(localStorage.getItem(_PIN_STORAGE) ? 'change-old' : 'setup-enter');
+      document.getElementById('pin-overlay').style.display = 'flex';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('pin-overlay').style.display === 'none') return;
+      if (e.key >= '0' && e.key <= '9') { e.preventDefault(); pinKey(+e.key); }
+      else if (e.key === 'Backspace')    { e.preventDefault(); pinBack(); }
+    });
+
+    // Init: hide overlay immediately if session already unlocked,
+    // otherwise set the correct mode (verify or first-time setup).
+    // loadData() runs regardless — data loads behind the overlay.
+    (function() {
+      if (sessionStorage.getItem(_PIN_SESSION) === '1') {
+        document.getElementById('pin-overlay').style.display = 'none';
+        return;
+      }
+      _pinSetMode(localStorage.getItem(_PIN_STORAGE) ? 'verify' : 'setup-enter');
+    })();
 
     // ─── Init ─────────────────────────────────────────────────────────────────
     setView('calendario');
