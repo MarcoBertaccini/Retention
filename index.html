@@ -1423,7 +1423,8 @@
     }
 
     // ─── Data loading ─────────────────────────────────────────────────────────
-    async function loadData() {
+    async function loadData(ms = 500) {
+      if (ms > 0) await new Promise(r => setTimeout(r, ms));
       try {
         const res  = await fetch(WEBHOOK_GET);
         const rows = await res.json();
@@ -2100,7 +2101,7 @@
 
     // ─── Init ─────────────────────────────────────────────────────────────────
     setView('calendario');
-    loadData();
+    loadData(0);
   </script>
 
   <!-- ── Toast container ── -->
