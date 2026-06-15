@@ -1423,7 +1423,7 @@
     }
 
     // ─── Data loading ─────────────────────────────────────────────────────────
-    async function loadData(ms = 2000) {
+    async function loadData(ms = 2500) {
       if (ms > 0) await new Promise(r => setTimeout(r, ms));
       try {
         const res  = await fetch(WEBHOOK_GET);
